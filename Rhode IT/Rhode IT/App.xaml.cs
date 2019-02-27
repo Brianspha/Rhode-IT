@@ -10,6 +10,8 @@ namespace Rhode_IT
         public App()
         {
             InitializeComponent();
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NzMzOTZAMzEzNjJlMzQyZTMwSDdIU0lXazFvSFpJY2hOM01JeXZHOG1pTDN5RWxqcDhkS1VsZEZoWUYvQT0=");
+
 
             MainPage = new MainPage();
         }

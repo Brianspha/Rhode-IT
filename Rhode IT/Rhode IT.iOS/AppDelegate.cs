@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Foundation;
+using Syncfusion.XForms.iOS.Buttons;
+using Syncfusion.XForms.iOS.TextInputLayout;
 using UIKit;
 
 namespace Rhode_IT.iOS
@@ -24,7 +26,8 @@ namespace Rhode_IT.iOS
         {
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
-
+            SfButtonRenderer.Init();
+            SfTextInputLayoutRenderer.Init();
             return base.FinishedLaunching(app, options);
         }
     }

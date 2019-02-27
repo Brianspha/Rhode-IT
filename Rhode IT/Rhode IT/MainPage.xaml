@@ -2,13 +2,28 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Rhode_IT"
-             x:Class="Rhode_IT.MainPage">
+             x:Class="Rhode_IT.MainPage"
+             BackgroundColor="WhiteSmoke">
 
-    <StackLayout>
-        <!-- Place new controls here -->
-        <Label Text="Welcome to Xamarin.Forms!" 
-           HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
+    <StackLayout x:Name="main"
+                 x:Uid="main"
+                 VerticalOptions="CenterAndExpand"
+                 HorizontalOptions="CenterAndExpand"
+                 
+                 >
+        <StackLayout VerticalOptions="CenterAndExpand"
+                      HorizontalOptions="CenterAndExpand"
+                     BackgroundColor="Transparent"
+                      >
+
+            <Label Text="Ride IT" 
+                   FontSize="Large"
+                   x:Name="TitleLabel"
+                   FontAttributes="Italic"
+                   TextColor="Black"
+                   
+                   ></Label>
+        </StackLayout>
+        
     </StackLayout>
-
 </ContentPage>

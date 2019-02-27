@@ -148,13 +148,19 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
+    <PackageReference Include="Syncfusion.Xamarin.Buttons">
+      <Version>16.4.0.54</Version>
+    </PackageReference>
+    <PackageReference Include="Syncfusion.Xamarin.Core">
+      <Version>16.4.0.54</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Forms" Version="3.5.0.169047" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Rhode_IT\Rhode_IT.csproj">
-      <Project>{7B43357F-9A04-4894-BA7A-81C5CCD3189E}</Project>
-      <Name>Rhode_IT</Name>
+    <ProjectReference Include="..\Rhode IT\Rhode IT.csproj">
+      <Project>{bd536fa7-f95b-47da-82d2-8b7c16e2626e}</Project>
+      <Name>Rhode IT</Name>
     </ProjectReference>
   </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
