@@ -16,7 +16,7 @@
                      BackgroundColor="Transparent"
                       >
 
-            <Label Text="Ride IT" 
+            <Label Text="Rhode IT" 
                    FontSize="Large"
                    x:Name="TitleLabel"
                    FontAttributes="Italic"

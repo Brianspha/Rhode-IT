@@ -14,7 +14,7 @@ using Android.Widget;
 
 namespace Rhode_IT.Droid.Activities
 {
-    [Activity(Label = "Rhode IT", NoHistory = true, Icon = "@drawable/icon", Theme = "@android:style/Theme.Material.Light", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "Rhode IT", NoHistory = true, Icon = "@drawable/icon", Theme = "@style/MainTheme.Base", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class LaunchScreen : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -29,7 +29,7 @@ namespace Rhode_IT.Droid.Activities
         {
             Thread.Sleep(1000); // Simulate a long pause
             RunOnUiThread(() => StartActivity(typeof(MainActivity)));
-            this.OverridePendingTransition(Android.Resource.Animation.FadeIn, Android.Resource.Animation.SlideOutRight);
+            this.OverridePendingTransition(Android.Resource.Animation.SlideInLeft, Android.Resource.Animation.SlideOutRight);
         }
     }
 }
