@@ -3,9 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Foundation;
+using UIKit;
+using Acr.UserDialogs;
+using Realms;
+using System.Threading.Tasks;
+using TK.CustomMap.Api;
+using TK.CustomMap.Api.Google;
+using TK.CustomMap.Api.OSM;
+using TK.CustomMap.Interfaces;
+using TK.CustomMap.Overlays;
+using Xamarin.Forms;
+using TK.CustomMap;
+using Xamarin;
+using TK.CustomMap.iOSUnified;
+using Syncfusion.SfRadialMenu.XForms.iOS;
 using Syncfusion.XForms.iOS.Buttons;
 using Syncfusion.XForms.iOS.TextInputLayout;
-using UIKit;
+using Syncfusion.XForms.iOS.PopupLayout;
+using Rhode_IT.iOS.Helpers;
+using Rhode_IT.Databases;
+using Syncfusion.SfBusyIndicator.XForms.iOS;
 
 namespace Rhode_IT.iOS
 {
@@ -25,9 +42,29 @@ namespace Rhode_IT.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
-            LoadApplication(new App());
+           SfPopupLayoutRenderer.Init();
             SfButtonRenderer.Init();
             SfTextInputLayoutRenderer.Init();
+            new SfBusyIndicatorRenderer();
+            ZXing.Net.Mobile.Forms.iOS.Platform.Init();
+            var renderer = new TKCustomMapRenderer();
+            var temp = new ResourceHelper();
+            MainDataBase db = new MainDataBase();
+            SfPopupLayoutRenderer.Init();
+            Rg.Plugins.Popup.Popup.Init();
+            Syncfusion.XForms.iOS.TabView.SfTabViewRenderer.Init();
+            Syncfusion.ListView.XForms.iOS.SfListViewRenderer.Init();
+            SfRadialMenuRenderer.Init();
+            Syncfusion.XForms.iOS.TabView.SfTabViewRenderer.Init();
+            if (db.FirstRun())
+            {
+                LoadApplication(new App(temp.Process(), temp.GetParsedVenuesWithSubjects()));
+            }
+            else
+            {
+                LoadApplication(new App());
+            }
+            LoadApplication(new App());
             return base.FinishedLaunching(app, options);
         }
     }

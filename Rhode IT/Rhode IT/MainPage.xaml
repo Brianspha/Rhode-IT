@@ -4,24 +4,22 @@
              xmlns:local="clr-namespace:Rhode_IT"
              x:Class="Rhode_IT.MainPage"
              BackgroundColor="WhiteSmoke">
-
     <StackLayout x:Name="main"
                  x:Uid="main"
                  VerticalOptions="CenterAndExpand"
                  HorizontalOptions="CenterAndExpand"
-                 
+                
                  >
         <StackLayout VerticalOptions="CenterAndExpand"
                       HorizontalOptions="CenterAndExpand"
                      BackgroundColor="Transparent"
                       >
 
-            <Label Text="Rhode IT" 
-                   FontSize="Large"
+            <Label Text="Login" 
+                   FontSize="{Binding FontSize}"
                    x:Name="TitleLabel"
                    FontAttributes="Italic"
-                   TextColor="Black"
-                   
+                   TextColor="Black"                  
                    ></Label>
         </StackLayout>
         

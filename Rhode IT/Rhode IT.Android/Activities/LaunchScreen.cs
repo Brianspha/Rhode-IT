@@ -28,8 +28,10 @@ namespace Rhode_IT.Droid.Activities
         private void LoadActivity()
         {
             Thread.Sleep(1000); // Simulate a long pause
-            RunOnUiThread(() => StartActivity(typeof(MainActivity)));
-            this.OverridePendingTransition(Android.Resource.Animation.SlideInLeft, Android.Resource.Animation.SlideOutRight);
+            Bundle animationBundle = ActivityOptions.MakeCustomAnimation(this, Resource.Animation.abc_fade_in, Resource.Animation.abc_fade_out).ToBundle();
+
+            // Pass on the Bundle object to the StartActivity method 
+            RunOnUiThread(() => StartActivity(new Intent(this, typeof(MainActivity)), animationBundle));
         }
     }
 }

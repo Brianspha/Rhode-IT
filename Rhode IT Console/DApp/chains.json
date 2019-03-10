@@ -1,0 +1,22 @@
+{
+  "0xa6b7fbc7037b7722396500b4138a3337cb7be2d1181a0e3cb18edb3f1e857fe5": {
+    "contracts": {
+      "0x3043b04ad856d169c8f0b0509c0bc63192dc7edd92d6933c58708298a0e381be": {
+        "name": "ENSRegistry",
+        "address": "0xf41a0Fe27451206032F4A968325961E7Fa55E3C9"
+      },
+      "0x6e47a27a03b9a8a48e0f61ed35dac7974353fd6f1c25b5ee33005a9147533d33": {
+        "name": "Resolver",
+        "address": "0x6Fcb2871Afd9a7cAE6101Ff3A69E229226cf2f52"
+      },
+      "0x979e1a90ff33f70414e77b2865f52dcc0bf6cbdf16ca08b0c7b4a2e4a6610344": {
+        "name": "FIFSRegistrar",
+        "address": "0xda2efE5B7609149c4Db569c5e30Db57c892a8703"
+      },
+      "0xe5ffa40ff05c6615ec2e56809582ef67c8fa80306dcacf6d5d86d12917a7d5c7": {
+        "name": "RhodeIT",
+        "address": "0x109f272016Ae7fEf51D16a463Da7C9B75D2Ee55b"
+      }
+    }
+  }
+}
