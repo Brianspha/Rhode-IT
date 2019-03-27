@@ -23,6 +23,8 @@ using Syncfusion.XForms.iOS.PopupLayout;
 using Rhode_IT.iOS.Helpers;
 using Rhode_IT.Databases;
 using Syncfusion.SfBusyIndicator.XForms.iOS;
+using Prism;
+using Prism.Ioc;
 
 namespace Rhode_IT.iOS
 {
@@ -58,14 +60,21 @@ namespace Rhode_IT.iOS
             Syncfusion.XForms.iOS.TabView.SfTabViewRenderer.Init();
             if (db.FirstRun())
             {
-                LoadApplication(new App(temp.Process(), temp.GetParsedVenuesWithSubjects()));
+                LoadApplication(new App(new iOSInitializer(),temp.Process(), temp.GetParsedVenuesWithSubjects()));
             }
             else
             {
-                LoadApplication(new App());
+                LoadApplication(new App(new iOSInitializer()));
             }
             LoadApplication(new App());
             return base.FinishedLaunching(app, options);
+        }
+        public class iOSInitializer : IPlatformInitializer
+        {
+            public void RegisterTypes(IContainerRegistry containerRegistry)
+            {
+                // Register any platform specific implementations
+            }
         }
     }
 }

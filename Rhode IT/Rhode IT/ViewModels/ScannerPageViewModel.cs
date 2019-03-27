@@ -1,125 +1,129 @@
-﻿using Acr.UserDialogs;
-using Rhode_IT.Views;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
-using Xamarin.Forms;
-using ZXing;
-using ZXing.Mobile;
-using ZXing.Net.Mobile.Forms;
+using System.Threading.Tasks;
+using Acr.UserDialogs;
+using Prism.Commands;
+using Prism.Mvvm;
+using Prism.Navigation;
+using Prism.Services;
 
 namespace Rhode_IT.ViewModels
 {
-  public  class ScannerPageViewModel:INotifyPropertyChanged
+    public class ScannerPageViewModel : ViewModelBase
     {
-        ZXingScannerPage scanPage;
-        private ZXingScannerView zxing;
-        private ZXingDefaultOverlay overlay;
-        private bool scanning;
-        public Grid grid { get; private set; }
-        public event PropertyChangedEventHandler PropertyChanged;
+        #region Properties
 
-        public bool IsScanning
+        #region - Interfaces
+
+        private readonly INavigationService _navigationService;
+        private readonly IPageDialogService _pageDialogue;
+        private readonly IDeviceService _deviceService;
+        private readonly IUserDialogs current;
+        #endregion - Interfaces
+
+        #region - Delegate Commands
+
+        public DelegateCommand OnBarcodeScannedCommand { get; set; }
+
+        #endregion - Delegate Commands
+
+        #region - Properties
+
+        //Used in OnBarcodeScanned();
+        bool _isProcessing = false;
+
+        private bool _isAnalyzing = true;
+        public bool IsAnalyzing
         {
             get
             {
-                return scanning;
+                return _isAnalyzing;
             }
             set
             {
-                if(value != IsScanning)
+                if (SetProperty(ref _isAnalyzing, value))
                 {
-                    scanning = value;
-                    OnPropertyChanged(nameof(IsScanning));
+                    //Do something
                 }
             }
         }
 
-        public ScannerPageViewModel()
+        private bool _isScanning;
+        public bool IsScanning
         {
-            SetUp();
+            get
+            {
+                return _isScanning;
+            }
+            set
+            {
+                if (SetProperty(ref _isScanning, value))
+                {
+                    //Do something
+                }
+            }
         }
 
-       
-        /// <summary>
-        /// Setups the scanner page
-        /// </summary>
-        public void SetUp()
+        private ZXing.Result _result;
+        public ZXing.Result Result
         {
-            var current = UserDialogs.Instance;
-            scanPage = new ZXingScannerPage();
-            zxing = new ZXingScannerView
+            get
             {
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                VerticalOptions = LayoutOptions.FillAndExpand
-            };
-            zxing.Options = new MobileBarcodeScanningOptions()
-            {
-                UseFrontCameraIfAvailable = false, //update later to come from settings
-                PossibleFormats = new List<BarcodeFormat>(),
-                   TryHarder = true,
-                   AutoRotate = false,
-                   TryInverted = true,
-                   DelayBetweenContinuousScans = 2000
-               };
-            zxing.Options.PossibleFormats.Add(BarcodeFormat.QR_CODE);
-            zxing.Options.PossibleFormats.Add(BarcodeFormat.DATA_MATRIX);
-            zxing.Options.PossibleFormats.Add(BarcodeFormat.EAN_13);
-            if (zxing.IsScanning)
-            {
-                zxing.AutoFocus();
+                return _result;
             }
-             zxing.OnScanResult += (result) =>
-          
-                Device.BeginInvokeOnMainThread(async () => {
+            set
+            {
+                if (SetProperty(ref _result, value))
+                {
+                    //Do something
+                }
+            }
+        }
 
-                    // Stop analysis until we navigate away so we don't keep reading barcodes
-                    zxing.IsAnalyzing = false;
+        #endregion - Properties
 
-                    // Show an alert
-                    await current.AlertAsync("Scanned Barcode", result.Text, "OK");
-                    // Navigate away
-                    var mainPage = new MainPage();//this could be content page
-                    TabbedViewViewModel viewModel = new TabbedViewViewModel(4);//@dev indicate the index of the starting tab
-                    var rootPage = new NavigationPage(new TabbedView(viewModel));
-                    Xamarin.Forms.Application.Current.MainPage = rootPage;
+        #endregion Properties
+
+        public ScannerPageViewModel(INavigationService navigationService, IDeviceService deviceService) : base(navigationService)
+        {
+            Title = "Scan";
+
+            _navigationService = navigationService;
+            _deviceService = deviceService;
+
+            OnBarcodeScannedCommand = new DelegateCommand(OnBarcodeScanned);
+
+            _isScanning = true;
+            _isAnalyzing = true;
+
+            RaisePropertyChanged("IsScanning");
+            RaisePropertyChanged("IsAnalyzing");
+        }
+
+        private void OnBarcodeScanned()
+        {
+            if (!_isProcessing)
+            {
+                _deviceService.BeginInvokeOnMainThread(async () =>
+                {
+                    _isProcessing = true;
+                    _isAnalyzing = false;
+                    RaisePropertyChanged("IsAnalyzing");
+
+                    string message = String.Format("I read a barcode and found the value: {0}", Result.Text);
+
+                    Debug.WriteLine(message);
+
+                    await _pageDialogue.DisplayAlertAsync("Scan!", message, "Good for you");
+
+                    _isProcessing = false;
+                    _isAnalyzing = true;
+                    RaisePropertyChanged("IsAnalyzing");
                 });
-
-            overlay = new ZXingDefaultOverlay
-            {
-                TopText = "Hold your phone up to the barcode",
-                BottomText = "Scanning will happen automatically",
-                ShowFlashButton = zxing.HasTorch,
-            };
-            overlay.FlashButtonClicked += (sender, e) => {
-                zxing.IsTorchOn = !zxing.IsTorchOn;
-            };
-             grid = new Grid
-            {
-                VerticalOptions = LayoutOptions.FillAndExpand,
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-            };
-            grid.Children.Add(zxing);
-            grid.Children.Add(overlay);
-            Xamarin.Forms.Application.Current.MainPage = new NavigationPage(scanPage);
-
-
-
-        }
-
-        /// <summary>
-        /// Ons the property changed.
-        /// </summary>
-        /// <param name="propertyName">Property name.</param>
-        void OnPropertyChanged(string propertyName)
-        {
-            //PropertyChangedEventHandler eventHandler = this.PropertyChanged;
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
     }
 }

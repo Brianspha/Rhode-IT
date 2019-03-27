@@ -118,7 +118,7 @@ namespace Rhode_IT.ViewModels
         public void setUp()
         {
             main = new Grid { BackgroundColor = Color.White };
-            Tabs = new TabItemCollection { new SfTabItem { Title = "Account", Content = new MainMenuTab().Content }, new SfTabItem { Title = "Connect to Station", Content = new ConnectToPlatformTab().Content }, new SfTabItem { Title = "History", Content = new MapsTab().Content } };
+            Tabs = new TabItemCollection { new SfTabItem { Title = "Account", Content = new MainMenuTab().Content }, new SfTabItem { Title = "Connect to Docking Station", Content = new ScanToConnectPage().Content }, new SfTabItem { Title = "History", Content = new MapsTab().Content } };
             Count = tabs.Count;
             tabView = new SfTabView() { SelectedIndex=startTabIndex,DisplayMode = TabDisplayMode.ImageWithText, EnableSwiping = true, BackgroundColor = Color.WhiteSmoke, Items = tabs , VisibleHeaderCount = count };
             tabView.SelectionIndicatorSettings.Position = SelectionIndicatorPosition.Top;

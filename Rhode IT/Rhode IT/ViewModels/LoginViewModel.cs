@@ -1,4 +1,6 @@
 ﻿using Acr.UserDialogs;
+using Rhode_IT.Databases;
+using Rhode_IT.Models;
 using Rhode_IT.Views;
 using Syncfusion.XForms.Buttons;
 using Syncfusion.XForms.TextInputLayout;
@@ -19,6 +21,7 @@ namespace Rhode_IT.ViewModels
         private DataTemplate templateView;
         StackLayout main,centerStack;
         Label TitleLabel;
+        MainDataBase db;
         private int FontSize = 30;//@dev defualt fontsize
         public int fontSize
         {
@@ -63,6 +66,7 @@ namespace Rhode_IT.ViewModels
   
         public StackLayout setUpView()
         {
+            db = new MainDataBase();
             centerStack = new StackLayout
             {
                 VerticalOptions = LayoutOptions.CenterAndExpand,
@@ -114,17 +118,20 @@ namespace Rhode_IT.ViewModels
             }
             var dialog = UserDialogs.Instance;
             dialog.ShowLoading("Logging in please wait",MaskType.Gradient);
-            var mainPage = new MainPage();//this could be content page
-            var rootPage = new NavigationPage(new TabbedView());
-            Xamarin.Forms.Application.Current.MainPage = rootPage;
+          
             try
             {
                 await test.deployAsync(studentNo.Text, password.Text);
                 dialog.HideLoading();
+                var mainPage = new MainPage();//this could be content page
+                var rootPage = new NavigationPage(new TabbedView());
+                Xamarin.Forms.Application.Current.MainPage = rootPage;
+                db.saveLogins(new LoginDetails { userID = studentNo.Text, password = password.Text });
              }
             catch (Exception E)
             {
-                await dialog.AlertAsync(E.Message, "Something went wrong please ensure the correct details were used to login", "OK");
+                await dialog.AlertAsync("Something went wrong please ensure the correct details were used to login", "OOPS");
+                dialog.HideLoading();
             }
         }
 

@@ -56,7 +56,7 @@ namespace Rhode_IT
 					tempLoc = new VenueLocation();
 				}
 			}
-			db.StoreVenueLocations(VList);
+			db.storeVenueLocations(VList);
 		}
 
 

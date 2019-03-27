@@ -13,18 +13,22 @@ using Syncfusion.SfBusyIndicator.XForms;
 using Syncfusion.XForms.PopupLayout;
 using Rg.Plugins.Popup.Extensions;
 using Acr.UserDialogs;
+using Rhode_IT.Helpers;
 
 namespace Rhode_IT
 {
     public partial class MainPage : ContentPage
     {
         LoginViewModel loginViewModel;
+        ConnectivityChecker connectivityChecker;
         public MainPage()
         {
             InitializeComponent();
+            connectivityChecker = new ConnectivityChecker();
             loginViewModel = new LoginViewModel(main, TitleLabel,Content,Navigation);
             GmsDirection.Init("AIzaSyCjMY_194mgeHLsyhlPre7kZ-UVXHCCt0o");
             BindingContext = loginViewModel;
         }
+        
     }
 }

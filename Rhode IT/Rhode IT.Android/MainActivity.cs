@@ -12,6 +12,8 @@ using TK.CustomMap.Droid;
 using Android.Support.Design.Widget;
 using System.Threading.Tasks;
 using Acr.UserDialogs;
+using Prism;
+using Prism.Ioc;
 
 namespace Rhode_IT.Droid
 {
@@ -35,17 +37,24 @@ namespace Rhode_IT.Droid
             if (db.FirstRun())
             {
                 var temp = new ResourceHelper(this.ApplicationContext, "RhodesMap.geojson", "Venues.txt");
-                LoadApplication(new App(temp.ReadLocalFile(), temp.GetParsedVenuesWithSubjects()));
+                LoadApplication(new App(new AndroidInitializer(),temp.ReadLocalFile(), temp.GetParsedVenuesWithSubjects()));
             }
             else
             {
-                LoadApplication(new App());
+                LoadApplication(new App(new AndroidInitializer()));
             }
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
         {
             ZXing.Net.Mobile.Android.PermissionsHandler.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+        public class AndroidInitializer : IPlatformInitializer
+        {
+            public void RegisterTypes(IContainerRegistry containerRegistry)
+            {
+                // Register any platform specific implementations
+            }
         }
     }
 }

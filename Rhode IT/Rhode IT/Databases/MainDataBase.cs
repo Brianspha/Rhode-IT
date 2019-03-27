@@ -1,10 +1,11 @@
-﻿using Realms;
+﻿using Plugin.SecureStorage;
+using Realms;
 using Realms.Sync;
+using Rhode_IT.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 namespace Rhode_IT.Databases
 {
     public class MainDataBase
@@ -46,7 +47,7 @@ namespace Rhode_IT.Databases
         /// Stores all the Lecture Venue locations on Rhodes Campus.
         /// </summary>
         /// <param name="locs">Locs.</param>
-        public void StoreVenueLocations(List<VenueLocation> locs)
+        public void storeVenueLocations(List<VenueLocation> locs)
         {
 
             db.Write(() => {
@@ -67,6 +68,45 @@ namespace Rhode_IT.Databases
                     db.Refresh();
                 }
             });
+        }
+        /// <summary>
+        /// @Dev saves user logins to 
+        /// </summary>
+        /// <param name="dets">login credentials of user</param>
+        public void saveLogins(LoginDetails dets)
+        {
+            CrossSecureStorage.Current.SetValue("Password", dets.password);
+            CrossSecureStorage.Current.SetValue("ID", dets.userID);
+        }
+        /// <summary>
+        /// @dev checks to see if the user had logged in before if yes we return they credientials
+        /// </summary>
+        /// <returns>user logins</returns>
+        public LoginDetails hasLoggedInBefore()
+        {
+            LoginDetails temp = new LoginDetails { userID = CrossSecureStorage.Current.GetValue("ID"), password = CrossSecureStorage.Current.GetValue("Password") };
+            return temp;
+        }
+        /// <summary>
+        /// @Dev deletes user login credentials everytime they loggout
+        /// </summary>
+        public void logOut()
+        {
+            CrossSecureStorage.Current.DeleteKey("Password");
+            CrossSecureStorage.Current.DeleteKey("ID");
+
+        }
+        public void saveIPConfig(IPConfig config)
+        {
+            db.Write(() =>
+            {
+                db.Add(config);
+            });
+        }
+        public IPConfig getCurrentDockingStationIP()
+        {
+            var IP =db.All<IPConfig>().ToList<IPConfig>();
+            return IP.ElementAt(0);
         }
     }
 }

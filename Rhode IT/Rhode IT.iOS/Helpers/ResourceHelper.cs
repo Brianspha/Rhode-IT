@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -19,6 +20,7 @@ namespace Rhode_IT.iOS.Helpers
         {
             var content = "";
             var content2 = "";
+            var current = Directory.GetCurrentDirectory();
             var text = System.IO.File.OpenText("Files/RhodesMap.geojson");
             string temp = text.ReadLine();
             while (true)
