@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+ <PackageReference Include="Acr.UserDialogs" Version="7.0.4" />
+    <PackageReference Include="CardsView" Version="2.0.8" />
+    <PackageReference Include="DK.SlidingPanel" Version="2.2.9" />
+    <PackageReference Include="FreshMvvm" Version="3.0.0" />
+    <PackageReference Include="JsonRpcSharp" Version="0.9.54734" />
+    <PackageReference Include="LiveXAML" Version="2.1.70" />
+    <PackageReference Include="Nethereum" Version="0.0.2.60" />
+    <PackageReference Include="Nethereum.JsonRpc.RpcClient" Version="3.2.0" />
+    <PackageReference Include="Npgsql" Version="4.0.6" />
+    <PackageReference Include="Prism.DryIoc.Forms" Version="7.1.0.431" />
+    <PackageReference Include="Realm" Version="3.4.0" />
+    <PackageReference Include="Rg.Plugins.Popup" Version="1.1.5.188" />
+    <PackageReference Include="sameerIOTApps.Plugin.SecureStorage" Version="2.5.0" />
+    <PackageReference Include="SlideOverKit" Version="2.1.6.2" />
+    <PackageReference Include="Syncfusion.Xamarin.Buttons" Version="17.1.0.41" />
+    <PackageReference Include="Syncfusion.Xamarin.Core" Version="17.1.0.41" />
+    <PackageReference Include="Syncfusion.Xamarin.SfBusyIndicator" Version="17.1.0.41" />
+    <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="17.1.0.41" />
+    <PackageReference Include="Syncfusion.Xamarin.SfPopupLayout" Version="17.1.0.41" />
+    <PackageReference Include="Syncfusion.Xamarin.SfRadialMenu" Version="17.1.0.41" />
+    <PackageReference Include="Syncfusion.Xamarin.SfTabView" Version="17.1.0.41" />
+    <PackageReference Include="Syncfusion.Xamarin.SfTreeMap" Version="17.1.0.41" />
+    <PackageReference Include="System.DirectoryServices" Version="4.5.0" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
+    <PackageReference Include="Xam.Plugin.Connectivity" Version="3.2.0" />
+    <PackageReference Include="Xamarin.Forms" Version="3.5.0.169047" /> 
+     <PackageReference Include="Xam.Plugin.Connectivity" Version="3.2.0" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.1.0" />
+    <PackageReference Include="Xamarin.Forms" Version="3.6.0.293080" />
+    <PackageReference Include="Xamarin.Forms.GoogleMaps.Clustering" Version="0.4.0" />
+    <PackageReference Include="Xamarin.Forms.Maps" Version="3.6.0.293080" />  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Npgsql">
+      <HintPath>..\..\..\..\Downloads\Npgsql.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\MapsTab.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Views\AvailableBicycles.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>
