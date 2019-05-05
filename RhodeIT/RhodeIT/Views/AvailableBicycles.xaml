@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<t:SlideMenuView
+    xmlns:t="clr-namespace:SlideOverKit;assembly=SlideOverKit" xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RhodeIT.Views.AvailableBicycles">
+    <Grid Padding="10, 30, 10, 10" x:Name="listView">
+        <Grid.ColumnDefinitions >
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="9*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Label Text="{Binding Name}" FontSize="24" Grid.ColumnSpan="2" XAlign="Center" YAlign="Center" TextColor="White" />
+
+        <Button Grid.ColumnSpan="2" Grid.Row="4" Text="Close" TextColor="White" FontSize="24" BorderRadius="5" BorderWidth="1" BackgroundColor="#2E3332" Command="{Binding Close}"/>
+    </Grid>
+</t:SlideMenuView>
