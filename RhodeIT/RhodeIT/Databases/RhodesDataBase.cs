@@ -57,8 +57,6 @@ namespace RhodeIT.Databases
                     command.Dispose();
                     dataReader.Close();
                 }
-
-
             return await Task.FromResult(found);
         }
     }
