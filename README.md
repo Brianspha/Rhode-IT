@@ -4,5 +4,5 @@
 
 
 ## System overview
-1. initial plan 
+-  initial plan 
   ![Alt text](/Screenshots/overview.PNG)
