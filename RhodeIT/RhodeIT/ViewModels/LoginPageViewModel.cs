@@ -1,6 +1,5 @@
 ﻿using Acr.UserDialogs;
-using ImageCircle.Forms.Plugin.Abstractions;
-using JsonRpcSharp.Client;
+using Prism.Navigation;
 using RhodeIT.Classes;
 using RhodeIT.Databases;
 using RhodeIT.Models;
@@ -8,33 +7,38 @@ using RhodeIT.Views;
 using Syncfusion.XForms.Buttons;
 using Syncfusion.XForms.TextInputLayout;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
+using System.Text;
 using Xamarin.Forms;
+using JsonRpcSharp;
+using JsonRpcSharp.Client;
 
 namespace RhodeIT.ViewModels
 {
-    public class LoginPageViewModel : INotifyPropertyChanged
+    public class LoginPageViewModel:INotifyPropertyChanged
     {
-        private Entry studentNo, password;
-        private SfTextInputLayout inputLayoutStudentNo, inputLayoutPassword;
-        private StackLayout maincontent, PagelabelStackLayOut;
-        private Label TitleLabel;
-        private RhodeITDB db;
-        private int fontSize = 30;//@dev defualt fontsize   
+        View content;
+        Entry studentNo, password;
+        SfTextInputLayout inputLayoutStudentNo, inputLayoutPassword;
+        private DataTemplate templateView;
+        StackLayout main;
+        Label TitleLabel;
+        RhodeITDB db;
+        private int FontSize = 30;//@dev defualt fontsize   
         public event PropertyChangedEventHandler PropertyChanged;
-
-        private readonly string[] Icons = new string[] { "Icon.png" };
-        private  RhodeITSmartContract SmartContract;
-        private CircleImage LoginPageIcon;
-        public int FontSize
+        RhodeITSmartContract SmartContract;
+        public int fontSize
         {
-            get => fontSize;
+            get
+            {
+                return FontSize;
+            }
             private set
             {
-                if (value != fontSize)
+                if(value != FontSize)
                 {
-                    fontSize = value;
+                    FontSize = value;
                     OnPropertyChanged(nameof(FontSize));
 
                 }
@@ -42,92 +46,61 @@ namespace RhodeIT.ViewModels
         }
         public StackLayout Maincontent
         {
-            get => maincontent;
+            get
+            {
+                return setUpView();
+            }
             private set
             {
-                if (value != maincontent)
-                {
-                    maincontent = value;
-                    OnPropertyChanged(nameof(Maincontent));
+                if (value != Maincontent)
+                { 
+                OnPropertyChanged(nameof(Maincontent));
                 }
-            }
+             }
         }
 
         public LoginPageViewModel()
         {
             setUpView();
         }
-
+  
         public StackLayout setUpView()
         {
             db = new RhodeITDB();
-            Maincontent = new StackLayout
+            main = new StackLayout
             {
                 VerticalOptions = LayoutOptions.CenterAndExpand,
                 HorizontalOptions = LayoutOptions.CenterAndExpand,
+                BackgroundColor = Color.Transparent
             };
-            PagelabelStackLayOut = new StackLayout
-            {
-                VerticalOptions = LayoutOptions.CenterAndExpand,
-                HorizontalOptions = LayoutOptions.CenterAndExpand,
-            };
-            TitleLabel = new Label
-            {
-                TextColor = Color.Black
-            };
-            inputLayoutStudentNo = new SfTextInputLayout
-            {
-                Hint = "Student no",
-                FocusedColor = Color.Black,
-                UnfocusedColor = Color.Black,
-                ContainerType = ContainerType.Outlined,
-                OutlineCornerRadius = 8
-            };
+            TitleLabel = new Label();
+            inputLayoutStudentNo = new SfTextInputLayout();
+            inputLayoutStudentNo.Hint = "Student no";
+            inputLayoutStudentNo.ContainerType = ContainerType.Outlined;
+            inputLayoutStudentNo.OutlineCornerRadius = 8;
             studentNo = new Entry();
             inputLayoutStudentNo.InputView = studentNo;
             inputLayoutStudentNo.ErrorText = "Field cant be left blank";
             inputLayoutStudentNo.FocusedColor = Color.Black;
-            inputLayoutPassword = new SfTextInputLayout
-            {
-                Hint = "Password",
-                ContainerType = ContainerType.Outlined,
-                OutlineCornerRadius = 8
-            };
+            inputLayoutPassword = new SfTextInputLayout();
+            inputLayoutPassword.Hint = "Password";
+            inputLayoutPassword.ContainerType = ContainerType.Outlined;
+            inputLayoutPassword.OutlineCornerRadius = 8;
             password = new Entry();
             inputLayoutPassword.FocusedColor = Color.Black;
             inputLayoutPassword.InputView = password;
             inputLayoutPassword.ErrorText = "Field cant be left blank";
             inputLayoutPassword.EnablePasswordVisibilityToggle = true;
-            inputLayoutPassword.ShowCharCount = true;
-            inputLayoutPassword.HelperText = "The password is similar to that used in all university systems i.e. ross";
-            inputLayoutPassword.UnfocusedColor = Color.Black;
-            inputLayoutPassword.ShowHelperText = true;
             TitleLabel.FontSize = 30;
-            SfButton login = new SfButton
-            {
-                BackgroundColor = Color.DeepSkyBlue,
-                Text = "Login",
-                TextColor = Color.Black
-            };
-            //Assembly assembly = typeof(LoginPage).GetTypeInfo().Assembly;
-            //string file = Icons[0];
-            //string[] names = assembly.GetManifestResourceNames();
-            LoginPageIcon = new CircleImage
-            {
-                HeightRequest = 100,
-                WidthRequest = 100,
-                Aspect = Aspect.AspectFill,
-                HorizontalOptions = LayoutOptions.Center,
-                Source = ImageSource.FromUri(new Uri("http://oi68.tinypic.com/25s8nf5.jpg")),
-                Opacity=100
-            };
-            PagelabelStackLayOut.Children.Add(LoginPageIcon);
-            Maincontent.Children.Add(PagelabelStackLayOut);
-            Maincontent.Children.Add(inputLayoutStudentNo);
-            Maincontent.Children.Add(inputLayoutPassword);
-            Maincontent.Children.Add(login);
+            SfButton login = new SfButton();
+            login.BackgroundColor = Color.DeepSkyBlue;
+            login.Text = "Login";
+            login.TextColor = Color.Black;
+            main.Children.Add(inputLayoutStudentNo);
+            main.Children.Add(inputLayoutPassword);
+            main.Children.Add(login);
             login.Clicked += Login_ClickedAsync;
-            return maincontent;
+            return main;
         }
 
         private async void Login_ClickedAsync(object sender, EventArgs e)
@@ -144,25 +117,18 @@ namespace RhodeIT.ViewModels
                 inputLayoutPassword.HasError = true;
                 return;
             }
-
-            IUserDialogs dialog = UserDialogs.Instance;
-            dialog.ShowLoading("Logging in please wait", MaskType.Gradient);
-
+            var dialog = UserDialogs.Instance;
+            dialog.ShowLoading("Logging in please wait",MaskType.Gradient);
+          
             try
             {
-
                 // await test.LoginAsync(studentNo.Text, password.Text);
-                bool results = await rhodesDataBase.VerifyStudentAysnc(new LoginDetails { password = password.Text, userID = studentNo.Text.ToLower() });
+                bool success = await rhodesDataBase.VerifyStudentAysnc(new LoginDetails { password = password.Text, userID = studentNo.Text.ToLower() });
                 ///@dev 
-
-                /*
-                 * @dev the below if statement checks if the student is valid if they are the second if statement checks if they have been registered on the platforms smart
-                 * contract if they are usually the student object has a field called 'loginhash' if this field is not null it means the student has logged into the platform before
-                 * if its null we register the student on the platform
-                 */
-                if (results)
+               
+                if (success)
                 {
-                    await SmartContract.RegisterStudent(studentNo.Text, password.Text).ConfigureAwait(false);
+                    await SmartContract.Login(studentNo.Text, password.Text);
                     Console.WriteLine("Login succesfull");
                     dialog.HideLoading();
                     Application.Current.MainPage = new NavigationPage(new MainMenuTab());
@@ -172,14 +138,14 @@ namespace RhodeIT.ViewModels
                     Console.WriteLine("Login in failure");
                     throw new Exception();
                 }
-            }
-            catch (LoginException E)
+             }
+            catch(LoginException E)
             {
                 dialog.HideLoading();
                 await dialog.AlertAsync(E.Message, "Login Error");
 
             }
-            catch (RpcClientUnknownException)
+            catch(RpcClientUnknownException E)
             {
                 Console.WriteLine("Blockchain node is not runnig");
                 //@dev notify admin about error
@@ -193,14 +159,13 @@ namespace RhodeIT.ViewModels
                 await dialog.AlertAsync("Something went wrong please ensure the correct details were used to login", "OOPS");
                 dialog.HideLoading();
             }
-
         }
 
         /// <summary>
         /// Ons the property changed.
         /// </summary>
         /// <param name="propertyName">Property name.</param>
-        private void OnPropertyChanged(string propertyName)
+        void OnPropertyChanged(string propertyName)
         {
             //PropertyChangedEventHandler eventHandler = this.PropertyChanged;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

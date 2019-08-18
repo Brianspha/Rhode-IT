@@ -1,4 +1,4 @@
-﻿using Plugin.SecureStorage;
+﻿﻿using Plugin.SecureStorage;
 using Realms;
 using RhodeIT.Classes;
 using RhodeIT.Models;
@@ -139,7 +139,6 @@ namespace RhodeIT.Databases
         {
             ObservableCollection<Bicycle> temp = new ObservableCollection<Bicycle>();
             ///@dev fetch biycles from 
-
 
 
             return temp;

@@ -14,7 +14,6 @@ namespace RhodeIT.Databases
     /// </summary>
     public class RhodesDataBase
     {
-
         public RhodesDataBase()
         {
         }

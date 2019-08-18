@@ -1,5 +1,4 @@
-﻿using RhodeIT.Databases;
-using RhodeIT.ViewModels;
+﻿using RhodeIT.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,9 +29,7 @@ namespace RhodeIT.Views
 		}
         private void LogOut()
         {
-            Application.Current.MainPage = new LoginPage();
-            RhodeITDB db = new RhodeITDB();
-            db.logOut();
+
         }
         public int CheckPlatform()
         {

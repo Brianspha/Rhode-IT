@@ -1,6 +1,8 @@
 ﻿using Plugin.SecureStorage;
 using Realms;
+using Realms.Sync;
 using RhodeIT.Classes;
+using RhodeIT.Helpers;
 using RhodeIT.Models;
 using RhodeIT.Views;
 using System;
@@ -8,6 +10,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Xamarin.Forms;
 using Xamarin.Forms.GoogleMaps;
 
 namespace RhodeIT.Databases
@@ -15,8 +20,8 @@ namespace RhodeIT.Databases
     public class LocalDataBase
     {
         #region Local database function
-        private Realm db;
-        private readonly RhodeITSmartContract RhodeITSmartContract;
+        Realm db;
+        RhodeITSmartContract RhodeITSmartContract;
         /// <summary>
         /// Initializes a new instance of the <see cref="T:RealmDataBase"/> class.
         /// </summary>
@@ -33,7 +38,7 @@ namespace RhodeIT.Databases
             {
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
             }
@@ -44,7 +49,7 @@ namespace RhodeIT.Databases
         /// <returns><c>true</c>, if run was firsted, <c>false</c> otherwise.</returns>
         public bool FirstRun()
         {
-            List<VenueLocation> temp = db.All<VenueLocation>().ToList();
+            var temp = db.All<VenueLocation>().ToList();
             return temp.Count == 0 ? true : false;
         }
         /// <summary>
@@ -54,29 +59,20 @@ namespace RhodeIT.Databases
         public void storeVenueLocations(List<VenueLocation> locs)
         {
 
-            db.Write(() =>
-            {
-                List<VenueData> loc = db.All<VenueData>().ToList();
+            db.Write(() => {
+                var loc = db.All<VenueData>().ToList();
                 if (loc.Count == 0) //first time app is used create a new VenueData object
                 {
-                    VenueData VenueD = new VenueData();
-                    for (int i = 0; i < locs.Count; i++)
-                    {
-                        VenueD.Venues.Add(locs[i]);
-                    }
-
+                    var VenueD = new VenueData();
+                    for (int i = 0; i < locs.Count; i++) VenueD.Venues.Add(locs[i]);
                     db.Add(VenueD);
                     db.Refresh();
                 }
                 else
                 {
-                    VenueData temp = loc[0];
+                    var temp = loc[0];
                     temp.Venues.Clear();//clear the current list and add the updated venues
-                    for (int i = 0; i < locs.Count; i++)
-                    {
-                        temp.Venues.Add(locs[i]);
-                    }
-
+                    for (int i = 0; i < locs.Count; i++) temp.Venues.Add(locs[i]);
                     db.Add(temp);
                     db.Refresh();
                 }
@@ -133,7 +129,7 @@ namespace RhodeIT.Databases
         /// <returns></returns>
         public IPConfig getCurrentDockingStationIP()
         {
-            List<IPConfig> IP = db.All<IPConfig>().ToList<IPConfig>();
+            var IP = db.All<IPConfig>().ToList<IPConfig>();
             return IP.ElementAt(0);
         }
 
@@ -146,7 +142,7 @@ namespace RhodeIT.Databases
         {
             ObservableCollection<Bicycle> temp = new ObservableCollection<Bicycle>();
             ///@dev fetch biycles from 
-
+            
 
 
             return temp;
@@ -159,8 +155,8 @@ namespace RhodeIT.Databases
         /// <returns></returns>
         public Position getDockingStationLatLong(string name)
         {
-            IQueryable<VenueLocation> venue = db.All<VenueLocation>().Where(v => v.Name == name);
-            return new Position(venue.ToList()[0].Latitude, venue.ToList()[0].Longitude);
+            var venue = db.All<VenueLocation>().Where(v => v.Name == name);
+            return new Position(venue.ToList()[0].Lat, venue.ToList()[0].Long);
         }
         /// <summary>
         /// @dev returns the number of available bicycles in a given Docking station
@@ -170,10 +166,67 @@ namespace RhodeIT.Databases
         public int getAvailableBicyclesCount(string venueName)
         {
             return db.All<DockingStaion>().Where(station => station.DockingStationInformation.Name == venueName).ToList().Count;
-
+           
         }
 
-      
+        /// <summary>
+        /// @dev adds a venue/venues as Docking stations
+        /// stores venue/venues on the Blockchain database
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="names"></param>
+        /// <returns>returns 1  if added succesfully -1 if not 0 if already exist 0 if no paramaters were provided</returns>
+        public bool addDockingStation(string[] names)
+        {
+            List<VenueLocation> ven = new List<VenueLocation>();
+             if (names.Length>0)
+            {
+                var test = db.All<VenueLocation>().ToList();
+                foreach(VenueLocation loc in test)
+                {
+                    Console.WriteLine(loc.Name);
+                }
+                foreach (string name in names)
+                {
+                    var venue = db.All<VenueLocation>().Where(v => v.Name.Contains(name));
+                    if (venue.ToList().Count > 0)
+                    {
+                        var dockingStations = db.All<DockingStations>().ToList();
+                        if (dockingStations.Count == 0)
+                        {
+                            //@dev TODO sync with Blockchain
+                            DockingStations stations = new DockingStations();
+                            stations.RegisteredDockingStaions.Add(new DockingStaion { DockingStationInformation = venue.ToList()[0] });
+                            db.Write(() => {
+                                db.Add(stations);
+                            });
+                            //@dev 
+                            ven.Add(venue.ToList()[0]);
+                        }
+                        else
+                        {
+                            var exists = dockingStations.ToList()[0].RegisteredDockingStaions.ToList().Find(station => station.DockingStationInformation.Name.Contains(name));
+                            if (exists == null)
+                            {
+                                db.Write(() =>
+                                {
+                                    dockingStations.ToList()[0].RegisteredDockingStaions.Add(new DockingStaion { DockingStationInformation = venue.ToList()[0] }); 
+                                    db.Add(dockingStations[0], true);
+                                });
+                                ven.Add(venue.ToList()[0]);
+
+                                //@dev TODO sync with Blockchain
+                            }
+                        }
+                    }
+                }
+            }
+             if(ven.Count>0)
+            {
+                syncLatLongWithBlockchain(ven).Wait();
+            }
+            return ven.Count>0;
+        }
 
         /// <summary>
         /// @dev gets all registerd docking stations on platform
@@ -182,15 +235,15 @@ namespace RhodeIT.Databases
         public List<Pin> getAllDockingStations()
         {
             List<Pin> stationPins = new List<Pin>();
-            DockingStations stations = db.All<DockingStations>().ToList()[0];
-            string[] files = new string[] { "Icon1.png" };
-            if (stations != null)
+            var stations = db.All<DockingStations>().ToList()[0];
+            string[] files = new string []{ "Icon1.png" };
+            if(stations != null)
             {
-                foreach (DockingStaion station in stations.RegisteredDockingStaions)
+                foreach(var station in stations.RegisteredDockingStaions)
                 {
-                    Pin tempPin = new Pin() { Position = new Position(station.DockingStationInformation.Latitude, station.DockingStationInformation.Longitude), Label = station.DockingStationInformation.Name, Address = "Available Bicycles: " + station.AvailableBicycles.Count.ToString() };
-                    Assembly assembly = typeof(MapsTab).GetTypeInfo().Assembly;
-                    string file = files[0];
+                    var tempPin = new Pin() { Position = new Position(station.DockingStationInformation.Lat, station.DockingStationInformation.Long), Label =station.DockingStationInformation.Name, Address = "Available Bicycles: " + station.AvailableBicycles.Count.ToString() };
+                    var assembly = typeof(MapsTab).GetTypeInfo().Assembly;
+                    var file = files[0];
                     string[] names = assembly.GetManifestResourceNames();
                     tempPin.Icon = BitmapDescriptorFactory.FromBundle(file);
                     stationPins.Add(tempPin);
@@ -198,8 +251,22 @@ namespace RhodeIT.Databases
             }
             return stationPins;
         }
-        #endregion
+#endregion
         #region Communicate with Blockchain Functions
-        #endregion
+        /// <summary>
+        /// @dev stores new venue to smart contract
+        /// </summary>
+        /// <param name="venue"></param>
+        private async Task syncLatLongWithBlockchain(List<VenueLocation> venues)
+        {
+            await RhodeITSmartContract.registerDockingStation(venues);
+        }
+        private async Task<bool> addUser(string stdNo,string password)
+        {
+            bool added = await RhodeITSmartContract.Login(stdNo, password);
+            Console.WriteLine("Logged in: ", added);
+            return added;
+        }
+        #endregion 
     }
 }

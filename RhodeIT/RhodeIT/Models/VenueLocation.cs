@@ -1,32 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
 using Realms;
 namespace RhodeIT
 {
-    [JsonObject(MemberSerialization.OptIn)] // Only properties marked [JsonProperty] will be serialized
-
-    public class VenueLocation : RealmObject
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-
-        public string Name { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-
-        public string Description { get; set; }
-        /// <summary>
-        /// /
-        /// </summary>
-
-        public double Latitude { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-
-        public double Longitude { get; set; }
-
-
+	public class VenueLocation : RealmObject
+	{
+		public string Name { get; set; }
+		public string Description { get; set; }
+		public double Lat { get; set; }
+		public double Long { get; set; }
+		public DateTimeOffset LastUpdated = DateTime.Now;
     }
 }
