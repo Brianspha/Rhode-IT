@@ -9,25 +9,16 @@ using Xamarin.Forms;
 
 namespace RhodeIT.Views
 {
-	public class UserProfile : ContentPage
-	{
+    public partial class UserProfile : ContentPage
+    {
         UserProfileViewModel UserProfileViweModel;
-		public UserProfile ()
-		{
+        public UserProfile()
+        {
             ToolbarItem logOut = new ToolbarItem { Text = "Logout", Order = ToolbarItemOrder.Primary, Priority = 1 };
             ToolbarItems.Add(new ToolbarItem("Logout", null, new Action(() => LogOut()), ToolbarItemOrder.Secondary, CheckPlatform()));
             UserProfileViweModel = new UserProfileViewModel();
-            Content = new StackLayout
-            {
-                Children =
-                {
-                    new Label{Text="To do"}
-                },
-                HorizontalOptions=LayoutOptions.CenterAndExpand,
-                VerticalOptions=LayoutOptions.CenterAndExpand
-              
-            };
-		}
+            Content = UserProfileViweModel.Main;
+        }
         private void LogOut()
         {
             Application.Current.MainPage = new LoginPage();

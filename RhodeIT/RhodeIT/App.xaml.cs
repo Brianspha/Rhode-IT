@@ -19,7 +19,7 @@ namespace RhodeIT
         public static double ScreenWidth;
         public App()
         {
-
+            XF.Material.Forms.Material.Init(this);
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Variables.SyncFusionLicense);
             db = new RhodeITDB();
             LoginDetails dets = db.hasLoggedInBefore();

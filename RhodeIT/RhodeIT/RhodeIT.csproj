@@ -13,6 +13,7 @@
   <ItemGroup>
  <PackageReference Include="Acr.UserDialogs" Version="7.0.4" />
  <PackageReference Include="Agmo.JsonRpc.WebSocketClient" Version="3.0.0.1" />
+ <PackageReference Include="Forms.Controls.FlexButton" Version="0.11.0" />
  <PackageReference Include="FSharp.Core" Version="4.6.2" />
     <PackageReference Include="JsonRpcSharp" Version="0.9.54734" />
     <PackageReference Include="LiveXAML" Version="2.1.72" />
@@ -46,7 +47,8 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.2.0" />
     <PackageReference Include="Xamarin.Forms" Version="4.1.0.618606" />
     <PackageReference Include="Xamarin.Forms.GoogleMaps.Clustering" Version="1.0.1" />
-    <PackageReference Include="Xamarin.Forms.Maps" Version="4.1.0.618606" />  </ItemGroup>
+    <PackageReference Include="Xamarin.Forms.Maps" Version="4.1.0.618606" />
+    <PackageReference Include="XF.Material" Version="1.4.1.3" />  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Npgsql">
@@ -64,5 +66,12 @@
     <EmbeddedResource Update="Views\AvailableBicycles.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="Views\UserProfile.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Styles\" />
   </ItemGroup>
 </Project>
