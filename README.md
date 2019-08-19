@@ -5,4 +5,4 @@
 
 ## System overview
 -  initial plan 
-  ![Alt text](/Screenshots/overview.PNG)
+  ![Alt text](/Screenshots/overview.png)
