@@ -14,6 +14,7 @@ namespace RhodeIT.Databases
     /// </summary>
     public class RhodesDataBase
     {
+
         public RhodesDataBase()
         {
         }
@@ -42,7 +43,7 @@ namespace RhodeIT.Databases
             using (NpgsqlConnection connection = new NpgsqlConnection(Variables.connectionStringRhodesDB))
             {
                 connection.Open();
-                NpgsqlCommand command = new NpgsqlCommand("select * from student where studentno=" + "'" + details.userID + "'" + ";", connection);
+                NpgsqlCommand command = new NpgsqlCommand("select * from students where studentno=" + "'" + details.userID + "'" + ";", connection);
                 NpgsqlDataReader dataReader = command.ExecuteReader();
                 dataReader.Read();
                 var stdNumber = dataReader[2].ToString();

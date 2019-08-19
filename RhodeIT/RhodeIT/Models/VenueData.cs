@@ -1,11 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using Realms;
 namespace RhodeIT
 {
-	public class VenueData:RealmObject
+    [JsonObject(MemberSerialization.OptIn)] // Only properties marked [JsonProperty] will be serialized
+    public class VenueData:RealmObject
 	{
-		public DateTimeOffset DateSubmitted = DateTime.Now;
-		public IList<VenueLocation> Venues { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonProperty]
+
+        public DateTimeOffset DateSubmitted = DateTime.Now;
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonProperty]
+
+        public IList<VenueLocation> Venues { get; }
 	}
 }
