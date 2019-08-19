@@ -8,7 +8,6 @@ using Nethereum.Web3;
 using RhodeIT.Databases;
 using RhodeIT.Helpers;
 using RhodeIT.Models;
-using Nethereum.Quorum;
 using RhodeIT.Services.RhodeIT;
 using RhodeIT.Services.RhodeIT.ContractDefinition;
 using Nethereum.Web3.Accounts.Managed;
@@ -22,7 +21,7 @@ namespace RhodeIT.Classes
     {
         RhodeITDB rhodeITDB;
         RhodesDataBase rhodesDataBase;
-        public Web3Quorum web3 { get; set; }
+        public Web3 web3 { get; set; }
         public TransactionReceipt Receipt { get; private set; }
         public RhodeITService SmartContractFunctions { get; private set; }
         RhodeITDeployment BaseContract;
@@ -43,8 +42,7 @@ namespace RhodeIT.Classes
             BaseContract = new RhodeITDeployment();
             rhodeITDB = new RhodeITDB();
             rhodesDataBase = new RhodesDataBase();
-            Account = new ManagedAccount(Variables.senderAddress, Variables.Passwordd);
-            web3 = new Web3Quorum(Variables.RPCAddressNodeGenesis);
+            web3 = new Web3(Variables.RPCAddressNodeGenesis);
             web3.TransactionManager.DefaultGas = new System.Numerics.BigInteger(8000000);
             web3.TransactionManager.DefaultGasPrice = new System.Numerics.BigInteger(20000000000);
             SmartContractFunctions = new RhodeITService();
