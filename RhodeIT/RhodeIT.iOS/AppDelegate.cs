@@ -41,11 +41,12 @@ namespace RhodeIT.iOS
             SfListViewRenderer.Init();
             Rg.Plugins.Popup.Popup.Init();
             Syncfusion.XForms.iOS.TabView.SfTabViewRenderer.Init();
-            Syncfusion.ListView.XForms.iOS.SfListViewRenderer.Init();
+            SfListViewRenderer.Init();
             SfRadialMenuRenderer.Init();
             ImageCircleRenderer.Init();
             Syncfusion.XForms.iOS.TabView.SfTabViewRenderer.Init();
             Xamarin.FormsGoogleMaps.Init(Variables.mapsAPIKEY);
+            Syncfusion.XForms.iOS.Cards.SfCardViewRenderer.Init();
             LoadApplication(new App());
             return base.FinishedLaunching(app, options);
         }

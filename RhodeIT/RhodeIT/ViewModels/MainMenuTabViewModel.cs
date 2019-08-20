@@ -94,7 +94,7 @@ namespace RhodeIT.ViewModels
         public void setUp()
         {
             main = new Grid { BackgroundColor = Color.White };
-            Tabs = new TabItemCollection { new SfTabItem { Title = "Profile", Content = new UserProfile().Content }, new SfTabItem { Title = "Rent Bicycle", Content = new MapsTab().Content }, new SfTabItem { Title = "History", Content = new HistoryTab().Content } };
+            Tabs = new TabItemCollection { new SfTabItem { Title = "Profile", Content = new UserProfile().Content }, new SfTabItem { Title = "Docking Stations", Content = new MapsTab().Content }, new SfTabItem { Title = "History", Content = new HistoryTab().Content } };
             Count = tabs.Count;
             tabView = new SfTabView() { SelectedIndex = startTabIndex, DisplayMode = TabDisplayMode.ImageWithText, EnableSwiping = true, BackgroundColor = Color.WhiteSmoke, Items = tabs, VisibleHeaderCount = count };
             tabView.SelectionIndicatorSettings.Position = SelectionIndicatorPosition.Top;

@@ -30,6 +30,7 @@
     <PackageReference Include="sameerIOTApps.Plugin.SecureStorage" Version="2.5.0" />
     <PackageReference Include="SlideOverKit" Version="2.1.6.2" />
     <PackageReference Include="Syncfusion.Xamarin.Buttons" Version="17.2.0.39" />
+    <PackageReference Include="Syncfusion.Xamarin.Cards" Version="17.2.0.39" />
     <PackageReference Include="Syncfusion.Xamarin.Core" Version="17.2.0.39" />
     <PackageReference Include="Syncfusion.Xamarin.GridCommon" Version="17.2.0.39" />
     <PackageReference Include="Syncfusion.Xamarin.SfBusyIndicator" Version="17.2.0.39" />

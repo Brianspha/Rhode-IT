@@ -28,7 +28,7 @@ namespace RhRhodeITode_IT.Droid.Activities
         }
         private void LoadActivity()
         {
-            Thread.Sleep(1000); // Simulate a long pause
+            Thread.Sleep(700); // Simulate a long pause
             Bundle animationBundle = ActivityOptions.MakeCustomAnimation(this, Resource.Animation.abc_grow_fade_in_from_bottom, Resource.Animation.abc_shrink_fade_out_from_bottom).ToBundle();
 
             // Pass on the Bundle object to the StartActivity method 
