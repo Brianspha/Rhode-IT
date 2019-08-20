@@ -5,10 +5,10 @@
 
 ## System overview
 -  Initial plan 
-  ![Alt text](/Screenshots/overview.PNG)
+  ![Alt text](/Screenshots/overview.png)
 
 
 ## App Screenshots
 - Launch Screen
-      ![Alt text](/Screenshots/screen.PNG)
+      ![Alt text](/Screenshots/screen.png)
 
