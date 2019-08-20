@@ -9,6 +9,6 @@
 
 
 ## App Screenshots
-- Launch Screen
+-  Launch Screen
       ![Alt text](/Screenshots/screen.png)
 
