@@ -9,6 +9,6 @@
 
 
 ## App Screenshots
-1.   Launch Screen
+1.   Launch Screen <br/>
       ![Alt text](/Screenshots/screen.png)
 
