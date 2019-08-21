@@ -17,8 +17,8 @@ namespace RhodeIT.Views
             ToolbarItem logOut = new ToolbarItem { Text = "Logout", Order = ToolbarItemOrder.Primary, Priority = 1 };
             ToolbarItems.Add(new ToolbarItem("Logout", null, new Action(() => LogOut()), ToolbarItemOrder.Secondary, CheckPlatform()));
             Content = new StackLayout {
-				Children = {
-					new Label { Text = "To do!" }
+                Children = {
+                    new RideHistoryViewModel().MyPastRides
 				},
                 HorizontalOptions=LayoutOptions.CenterAndExpand,
                 VerticalOptions=LayoutOptions.CenterAndExpand

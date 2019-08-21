@@ -102,14 +102,32 @@ namespace RhodeIT.ViewModels
                 Text = "g14m1190",
                 TextColor = Color.Black
             };
+            SfButton TopUp = new SfButton
+            {
+                Text = "Purchase Ride Credits",
+                CornerRadius = 20,
+                WidthRequest = 100,
+                BackgroundColor=Color.White,
+                TextColor=Color.Black,
+                BorderColor=Color.Black,
+                BorderWidth=1
+
+            };
             StackLayout studentNumberParent = new StackLayout
             {
-                VerticalOptions = LayoutOptions.FillAndExpand,
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.CenterAndExpand
             };
-
             studentNumberParent.Children.Add(studentNumberLabel);
             studentNumberParent.Children.Add(studentNumber);
+            StackLayout topUpParent = new StackLayout
+            {
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                Children ={
+                    TopUp
+                    }
+            };
             studentNumberCard.Content = studentNumberParent;
 
             //@dev ridecredits elements
@@ -142,6 +160,7 @@ namespace RhodeIT.ViewModels
             userDetailsLabelParent.Children.Add(studentNumberCard);
             userDetailsLabelParent.Children.Add(rideCreditsCard);
             imageTopParent.Children.Add(userDetailsLabelParent);
+            imageTopParent.Children.Add(topUpParent);
             userInfoParent.Content = imageTopParent;
 
             RidesViewModel = new RidesViewModel();
@@ -168,131 +187,31 @@ namespace RhodeIT.ViewModels
                     Label transactionReciept = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
                     Label transactionRecieptLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "TransactionReceipt" };
                     transactionReciept.SetBinding(Label.TextProperty, new Binding("TransactionReciept"));
-                    SfButton receipt = new SfButton();
-                    receipt.ImageSource = "https://cdn0.iconfinder.com/data/icons/social-messaging-ui-color-shapes/128/Info-circle-blue-512.png";
-                    receipt.ShowIcon = true;
-                    receipt.BackgroundColor = Color.Transparent;
-                    receipt.CornerRadius = new Thickness(360);
-                    StackLayout bikeIDParent = new StackLayout
+                    SfButton details = new SfButton
                     {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Padding=0,
-                        HeightRequest=30,
-                        Children = {
-                            bikeIDLabel,bikeID
-                        }
+                        Text = "Details",
+                        BackgroundColor = Color.White,
+                        TextColor = Color.Black,
+                        CornerRadius = 20,
+                        BorderColor = Color.Black,
+                        BorderWidth = 1
                     };
-                    StackLayout stationNameParent = new StackLayout
+                    SfButton cancel = new SfButton
                     {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
-                        Children = {
-                            stationNameLabel,stationName
-                        }
-                    };
-                    StackLayout durationParent = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
-                        Children = {
-                            durationLabel,duration
-                        }
-                    };
-                    StackLayout dockedParent = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
-                        Children = {
-                            dockedLabel,docked,
-                            receipt
-                        }
-                    };
-                    StackLayout transactionRecieptParent = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.CenterAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
-                        Children = {
-                            receipt
-                        }
-                    };
-                    StackLayout parentInfo = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Padding=0
-                    };
-                    MaterialCard parentInforCard = new MaterialCard
-                    {
-                        Elevation = 5,
-                        BackgroundColor = Color.White
-                    };
-                    parentInfo.Children.Add(bikeIDParent);
-                    parentInfo.Children.Add(stationNameParent);
-                    parentInfo.Children.Add(durationParent);
-                    parentInfo.Children.Add(dockedParent);
-                    parentInfo.Children.Add(transactionRecieptParent);
-                    parentInforCard.Content = parentInfo;
-                    Frame cardFrame = new Frame
-                    {
-                        HeightRequest=80,
-                        CornerRadius = 5,
-                        BackgroundColor = Color.WhiteSmoke,
-                        Padding = 3,
-                        Content = parentInforCard
-                    };
+                        Text = "Cancel",
+                        BackgroundColor = Color.White,
+                        TextColor = Color.Black,
+                        BorderColor = Color.Black,
+                        BorderWidth = 1,
+                        CornerRadius = 20,
 
-                    return cardFrame;
-                })
-            };
-            SfListView pastRides = new SfListView
-            {
-                ItemSize = 350,
-                Orientation = Orientation.Horizontal,
-                ItemsSource = RidesViewModel.Rides,
-                LayoutManager = new GridLayout() { SpanCount = 2 },
-                ItemTemplate = new DataTemplate(() =>
-                {
-                    Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                    Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station" };
-                    stationName.SetBinding(Label.TextProperty, new Binding("StationName"));
-                    Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID" };
-                    Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15 };
-                    bikeID.SetBinding(Label.TextProperty, new Binding("BikeID"));
-                    Label duration = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                    Label durationLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Duration" };
-                    duration.SetBinding(Label.TextProperty, new Binding("Duration"));
-                    Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                    Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked" };
-                    docked.SetBinding(Label.TextProperty, new Binding("Docked"));
-                    Label transactionReciept = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                    Label transactionRecieptLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "TransactionReceipt" };
-                    transactionReciept.SetBinding(Label.TextProperty, new Binding("TransactionReciept"));
-                    SfButton receipt = new SfButton();
-                    receipt.ImageSource = "https://cdn0.iconfinder.com/data/icons/social-messaging-ui-color-shapes/128/Info-circle-blue-512.png";
-                    receipt.ShowIcon = true;
-                    receipt.BackgroundColor = Color.Transparent;
-                    receipt.CornerRadius = new Thickness(360);
+
+                    };
                     StackLayout bikeIDParent = new StackLayout
                     {
                         VerticalOptions = LayoutOptions.FillAndExpand,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
                         Children = {
                             bikeIDLabel,bikeID
                         }
@@ -302,8 +221,6 @@ namespace RhodeIT.ViewModels
                         VerticalOptions = LayoutOptions.FillAndExpand,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
                         Children = {
                             stationNameLabel,stationName
                         }
@@ -313,8 +230,6 @@ namespace RhodeIT.ViewModels
                         VerticalOptions = LayoutOptions.FillAndExpand,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
                         Children = {
                             durationLabel,duration
                         }
@@ -324,29 +239,23 @@ namespace RhodeIT.ViewModels
                         VerticalOptions = LayoutOptions.FillAndExpand,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
                         Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
                         Children = {
                             dockedLabel,docked,
-                            receipt
                         }
                     };
                     StackLayout transactionRecieptParent = new StackLayout
                     {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
+                        VerticalOptions = LayoutOptions.CenterAndExpand,
                         HorizontalOptions = LayoutOptions.CenterAndExpand,
                         Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
                         Children = {
-                            receipt
+                            details,cancel
                         }
                     };
                     StackLayout parentInfo = new StackLayout
                     {
                         VerticalOptions = LayoutOptions.FillAndExpand,
                         HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Padding = 0
                     };
                     MaterialCard parentInforCard = new MaterialCard
                     {
@@ -371,18 +280,14 @@ namespace RhodeIT.ViewModels
                     return cardFrame;
                 })
             };
-            MaterialCard upcomingRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 10, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
-            MaterialCard pastCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 10, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
 
-            Label upComingLabel = new Label { Text = "Upcoming Rides", BackgroundColor = Color.White, FontSize = 18,FontAttributes=FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
-            Label ridesLabel = new Label { Text = "My Rides", BackgroundColor = Color.White, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
-            upcomingRidesCardLabel.Content = new StackLayout { Children = { upComingLabel },VerticalOptions=LayoutOptions.CenterAndExpand,HorizontalOptions=LayoutOptions.CenterAndExpand };
-            pastCardLabel.Content = new StackLayout { Children = { ridesLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
+            MaterialCard upcomingRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 10, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
+
+            Label upComingLabel = new Label { Text = "Upcoming Rides", BackgroundColor = Color.White, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
+            upcomingRidesCardLabel.Content = new StackLayout { Children = { upComingLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
             Main.Children.Add(userInfoParent);
             Main.Children.Add(upcomingRidesCardLabel);
             Main.Children.Add(upComingrides);
-            Main.Children.Add(pastCardLabel);
-            Main.Children.Add(pastRides);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
