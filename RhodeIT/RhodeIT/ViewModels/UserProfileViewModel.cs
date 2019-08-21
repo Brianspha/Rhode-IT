@@ -13,6 +13,7 @@ namespace RhodeIT.ViewModels
 
 
         private SfListView myRides;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         private SfListView MyRides
         {
@@ -26,7 +27,7 @@ namespace RhodeIT.ViewModels
                 }
             }
         }
-
+        PurchaseRideCreditsViewModel PurchaseRideCreditsViewModel;
         private CircleImage userImage;
         private StackLayout main;
         public StackLayout Main
@@ -51,6 +52,7 @@ namespace RhodeIT.ViewModels
 
         private void SetUp()
         {
+            PurchaseRideCreditsViewModel = new PurchaseRideCreditsViewModel();
             Main = new StackLayout
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
@@ -113,6 +115,7 @@ namespace RhodeIT.ViewModels
                 BorderWidth=1
 
             };
+            TopUp.Clicked += TopUp_Clicked;
             StackLayout studentNumberParent = new StackLayout
             {
                 VerticalOptions = LayoutOptions.CenterAndExpand,
@@ -290,7 +293,11 @@ namespace RhodeIT.ViewModels
             Main.Children.Add(upComingrides);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        private void TopUp_Clicked(object sender, EventArgs e)
+        {
+            PurchaseRideCreditsViewModel.PopupLayout.Show();
+        }
+
 
         /// <summary>
         /// Ons the property changed.
