@@ -116,9 +116,6 @@
     <PackageReference Include="Syncfusion.Xamarin.Cards">
       <Version>17.2.0.39</Version>
     </PackageReference>
-    <PackageReference Include="Syncfusion.Xamarin.Core">
-      <Version>17.2.0.39</Version>
-    </PackageReference>
     <PackageReference Include="Syncfusion.Xamarin.GridCommon">
       <Version>17.2.0.39</Version>
     </PackageReference>
@@ -129,6 +126,9 @@
       <Version>17.2.0.39</Version>
     </PackageReference>
     <PackageReference Include="Syncfusion.Xamarin.SfListView">
+      <Version>17.2.0.39</Version>
+    </PackageReference>
+    <PackageReference Include="Syncfusion.Xamarin.SfNavigationDrawer">
       <Version>17.2.0.39</Version>
     </PackageReference>
     <PackageReference Include="Syncfusion.Xamarin.SfPopupLayout">

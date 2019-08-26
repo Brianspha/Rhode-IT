@@ -1,5 +1,5 @@
 ﻿using Prism.Navigation;
-using Rhode_IT.Views;
+using RhodeIT.Views;
 using Syncfusion.XForms.TabView;
 using System;
 using System.Collections.Generic;
@@ -7,9 +7,9 @@ using System.ComponentModel;
 using System.Text;
 using Xamarin.Forms;
 
-namespace Rhode_IT.ViewModels
+namespace RhodeIT.ViewModels
 {
-    public class MainMenuTabViewModel : INotifyPropertyChanged
+    public class MainMenuOptionsViewModel : INotifyPropertyChanged
     {
         private int startTabIndex { get; set; }
         public Grid main { get; private set; }
@@ -86,7 +86,7 @@ namespace Rhode_IT.ViewModels
         /// <summary>
         /// Defualt constructor
         /// </summary>
-        public MainMenuTabViewModel() 
+        public MainMenuOptionsViewModel()
         {
             setUp();
         }
@@ -94,7 +94,7 @@ namespace Rhode_IT.ViewModels
         public void setUp()
         {
             main = new Grid { BackgroundColor = Color.White };
-            Tabs = new TabItemCollection { new SfTabItem { Title = "Profile", Content = new UserProfile().Content }, new SfTabItem { Title = "Rent Bicycle", Content = new MapsTab().Content }, new SfTabItem { Title = "History", Content = new HistoryTab().Content } };
+            Tabs = new TabItemCollection { new SfTabItem { Title = "Profile", Content = new UserProfile().Content }, new SfTabItem { Title = "Docking Stations", Content = new MapsTab().Content }, new SfTabItem { Title = "History", Content = new HistoryTab().Content } };
             Count = tabs.Count;
             tabView = new SfTabView() { SelectedIndex = startTabIndex, DisplayMode = TabDisplayMode.ImageWithText, EnableSwiping = true, BackgroundColor = Color.WhiteSmoke, Items = tabs, VisibleHeaderCount = count };
             tabView.SelectionIndicatorSettings.Position = SelectionIndicatorPosition.Top;

@@ -34,13 +34,15 @@ namespace RhodeIT.ViewModels
                 rideCreditsInputLayout.InputView = amount;
                 rideCreditsInputLayout.ErrorText = "Field cant be left blank";
                 rideCreditsInputLayout.FocusedColor = Color.Black;
-                return rideCreditsInputLayout;
+                return new StackLayout { VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.Center, Children = { rideCreditsInputLayout } };
 
             });
             PopupLayout = new SfPopupLayout();
             PopupLayout.PopupView.ContentTemplate = PopUpContents;
             PopupLayout.PopupView.AnimationMode = AnimationMode.Fade;
             PopupLayout.PopupView.AppearanceMode = AppearanceMode.TwoButton;
+            PopupLayout.PopupView.HorizontalOptions = LayoutOptions.CenterAndExpand;
+            PopupLayout.PopupView.VerticalOptions = LayoutOptions.Center;
             PopupLayout.Closed += PopupLayout_Closed;
             PopupLayout.Opened += PopupLayout_Opened;
         }

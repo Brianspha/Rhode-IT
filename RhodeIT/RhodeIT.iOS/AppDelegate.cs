@@ -48,6 +48,7 @@ namespace RhodeIT.iOS
             Xamarin.FormsGoogleMaps.Init(Variables.mapsAPIKEY);
             SfPopupLayoutRenderer.Init();
             Syncfusion.XForms.iOS.Cards.SfCardViewRenderer.Init();
+            new Syncfusion.SfNavigationDrawer.XForms.iOS.SfNavigationDrawerRenderer();
             LoadApplication(new App());
             return base.FinishedLaunching(app, options);
         }

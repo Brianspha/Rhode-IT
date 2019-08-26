@@ -1,32 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Nethereum.Contracts;
-using Nethereum.Hex.HexTypes;
+﻿using Nethereum.Quorum;
 using Nethereum.RPC.Eth.DTOs;
-using Nethereum.Web3;
+using Nethereum.Web3.Accounts.Managed;
 using RhodeIT.Databases;
 using RhodeIT.Helpers;
 using RhodeIT.Models;
-using Nethereum.Quorum;
 using RhodeIT.Services.RhodeIT;
 using RhodeIT.Services.RhodeIT.ContractDefinition;
-using Nethereum.Web3.Accounts.Managed;
+using System;
 
 namespace RhodeIT.Classes
 {
     /// <summary>
-    /// @dev responsible for communicating with RhodeIT smart contract
+    /// responsible for registering a student on the smartcontract and updating the user login on the Postgres server 
     /// </summary>
     public sealed class RhodeITSmartContract
     {
-        RhodeITDB rhodeITDB;
-        RhodesDataBase rhodesDataBase;
+        private RhodeITDB rhodeITDB;
+        private RhodesDataBase rhodesDataBase;
         public Web3Quorum web3 { get; set; }
         public TransactionReceipt Receipt { get; private set; }
         public RhodeITService SmartContractFunctions { get; private set; }
-        RhodeITDeployment BaseContract;
-        ManagedAccount Account;
+
+        private RhodeITDeployment BaseContract;
+        private ManagedAccount Account;
         public RhodeITSmartContract()
         {
             SetupAsync();
@@ -57,14 +53,13 @@ namespace RhodeIT.Classes
         /// <param name="studentNo">student number</param>
         /// <param name="password">password</param>
         /// <returns>if the login was succefull or not</returns>
-        public async Task<Tuple<bool, string>> RegisterStudent(string studentNo, string password)
+        public async void RegisterStudent(string studentNo, string password)
         {
             studentNo = studentNo.ToLower();
             string Thash = "";
-            var results = await SmartContractFunctions.AddUserRequestAsync(studentNo);
+            Tuple<bool, string> results = await SmartContractFunctions.AddUserRequestAsync(studentNo);
             Thash = results.Item2;
             rhodeITDB.Login(new LoginDetails { userID = studentNo, password = password, TransactionHash = Thash });
-            return new Tuple<bool, string>(results.Item1, results.Item2);
         }
 
     }

@@ -256,14 +256,6 @@ namespace RhodeIT.Databases
         }
         #endregion
         #region Communicate with Blockchain Functions
-
-        private async Task<bool> addUser(string stdNo, string password)
-        {
-            RhodeITSmartContract = new RhodeITSmartContract();
-            Tuple<bool, string> added = await RhodeITSmartContract.RegisterStudent(stdNo, password);
-            Console.WriteLine("Logged in: ", added);
-            return added.Item1;
-        }
         #endregion
     }
 }

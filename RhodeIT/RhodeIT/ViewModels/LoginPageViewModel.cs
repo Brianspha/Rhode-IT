@@ -162,7 +162,7 @@ namespace RhodeIT.ViewModels
                  */
                 if (results)
                 {
-                    await SmartContract.RegisterStudent(studentNo.Text, password.Text).ConfigureAwait(false);
+                    SmartContract.RegisterStudent(studentNo.Text, password.Text);
                     Console.WriteLine("Login succesfull");
                     dialog.HideLoading();
                     Application.Current.MainPage = new NavigationPage(new MainMenuTab());

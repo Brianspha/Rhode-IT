@@ -18,7 +18,6 @@ namespace RhodeIT.ViewModels
         private RhodesMap customMap;
         private readonly RhodesDataBase RhodesDataBase;
         private RhodeITService RhodeITServices;
-        private readonly RhodeITDB platformdb;
         private bool visibleYet;
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -37,7 +36,7 @@ namespace RhodeIT.ViewModels
                 if (value != dockingStaions)
                 {
                     dockingStaions = value;
-                    OnPropertyChanged(nameof(DockingStaions));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(DockingStaions)));
                 }
             }
         }
@@ -50,7 +49,7 @@ namespace RhodeIT.ViewModels
                 if (value != pins)
                 {
                     pins = value;
-                    OnPropertyChanged(nameof(Pins));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Pins)));
                 }
             }
         }
@@ -62,11 +61,12 @@ namespace RhodeIT.ViewModels
                 if (null != customMap.Region)
                 {
                     visibleYet = value;
-                    OnPropertyChanged("MapRegionVisible");
+                    OnPropertyChanged(new PropertyChangedEventArgs("MapRegionVisible"));
                     SetUpMap();
                 }
             }
         }
+
 
         public RhodesMap CustomMap
         {
@@ -76,7 +76,7 @@ namespace RhodeIT.ViewModels
                 if (customMap != value)
                 {
                     customMap = value;
-                    OnPropertyChanged(nameof(CustomMap));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(CustomMap)));
                 }
             }
 
@@ -89,7 +89,7 @@ namespace RhodeIT.ViewModels
                 if (value != main)
                 {
                     main = value;
-                    OnPropertyChanged(nameof(Main));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Main)));
                 }
             }
         }
@@ -104,6 +104,7 @@ namespace RhodeIT.ViewModels
             SlideUp = slideMenu;
             SetUpMap();
             ShowMenu = show;
+            //RefereshMap();
         }
         public void IsVisible()
         {
@@ -112,39 +113,22 @@ namespace RhodeIT.ViewModels
 
         private void SetUpMap()
         {
-            Pins = new ObservableCollection<Pin>();
-            CreatePins();
-            CustomMap = new RhodesMap
-            {
-                MapType = MapType.Street,
-                IsEnabled = true,
-                HorizontalOptions = LayoutOptions.FillAndExpand,
-                VerticalOptions = LayoutOptions.FillAndExpand
-            };
-            if (pins.Count == 0)
-            {
-                pins.Add(new Pin { Position = new Position(-33.311836, 26.520642), Label = "Rhodes University" });
-            }
-            foreach (Pin p in pins)
-            {
-                customMap.Pins.Add(p);
-            }
-            Console.WriteLine("Pins added: ", customMap.Pins.Count);
-            customMap.PinClicked += CustomMap_PinClicked;
+            PopulateMap();
             Main = new StackLayout
             {
                 Children =
                     {
-                        customMap
+                        CustomMap
                     },
-                HeightRequest = customMap.Height,
-                WidthRequest = customMap.Width,
+                HeightRequest = CustomMap.Height,
+                WidthRequest = CustomMap.Width,
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.CenterAndExpand
             };
-            customMap.MoveToRegion(MapSpan.FromCenterAndRadius(pins[0].Position, Distance.FromMiles(.8)));
-            customMap.Cluster();
         }
+
+
+
         public void CreatePins()
         {
             DockingStaions = RhodeITServices.GetDockingStations().Result;
@@ -172,18 +156,50 @@ namespace RhodeIT.ViewModels
             Main.Children.Add(SlideUp);
         }
 
+        private void PopulateMap()
+        {
+            Pins = new ObservableCollection<Pin>();
+            CreatePins();
+            CustomMap = new RhodesMap
+            {
+                MapType = MapType.Street,
+                IsEnabled = true,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                VerticalOptions = LayoutOptions.FillAndExpand
+            };
+            if (pins.Count == 0)
+            {
+                pins.Add(new Pin { Position = new Position(-33.311836, 26.520642), Label = "Rhodes University" });
+            }
+            foreach (Pin p in pins)
+            {
+                CustomMap.Pins.Add(p);
+            }
+            Console.WriteLine("Pins added: ", customMap.Pins.Count);
+            CustomMap.PinClicked += CustomMap_PinClicked;
+            CustomMap.MoveToRegion(MapSpan.FromCenterAndRadius(pins[0].Position, Distance.FromMiles(.8)));
+            CustomMap.Cluster();
+        }
+        /// <summary>
+        /// Refreshes map 
+        /// </summary>
+        public void RefereshMap()
+        {
+            Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+            {
+                Device.BeginInvokeOnMainThread(() => PopulateMap());
+                return true;
+            });
+
+        }
 
         /// <summary>
-        /// On the property changed.
+        /// On property changed Notifies UI on data changes.
         /// </summary>
         /// <param name="propertyName">Property name.</param>
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            //PropertyChangedEventHandler eventHandler = this.PropertyChanged;
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, e);
         }
 
     }

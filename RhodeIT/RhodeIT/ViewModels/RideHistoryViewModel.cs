@@ -117,10 +117,8 @@ namespace RhodeIT.ViewModels
                     StackLayout transactionRecieptParent = new StackLayout
                     {
                         VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.CenterAndExpand,
+                        HorizontalOptions = LayoutOptions.FillAndExpand,
                         Orientation = StackOrientation.Horizontal,
-                        Padding = 0,
-                        HeightRequest = 30,
                         Children = {
                             transactionRecieptLabel,transactionReciept
                         }

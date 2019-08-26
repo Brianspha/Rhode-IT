@@ -1,13 +1,9 @@
-﻿using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using RhodeIT.Views;
-using Prism.Navigation;
-using RhodeIT.Databases;
-using RhodeIT.Models;
-using System.Collections.Generic;
-using Acr.UserDialogs;
+﻿using RhodeIT.Databases;
 using RhodeIT.Helpers;
-using RhodeIT.Classes;
+using RhodeIT.Models;
+using RhodeIT.Views;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace RhodeIT
@@ -23,14 +19,16 @@ namespace RhodeIT
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Variables.SyncFusionLicense);
             db = new RhodeITDB();
             LoginDetails dets = db.hasLoggedInBefore();
-            if (!string.IsNullOrEmpty(dets.userID))
-            {
-                Current.MainPage = new NavigationPage(new MainMenuTab());
-            }
-            else
-            {
-                Current.MainPage = new LoginPage();
-            }
+            Current.MainPage = new NavigationPage(new MainMenuTab());
+
+            //if (!string.IsNullOrEmpty(dets.userID))
+            //{
+            //    Current.MainPage = new NavigationPage(new MainMenuTab());
+            //}
+            //else
+            //{
+            //    Current.MainPage = new LoginPage();
+            //}
         }
     }
 }

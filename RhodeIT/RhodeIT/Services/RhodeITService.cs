@@ -10,7 +10,6 @@ using RhodeIT.Services.RhodeIT.ContractDefinition;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RhodeIT.Services.RhodeIT
@@ -33,12 +32,25 @@ namespace RhodeIT.Services.RhodeIT
 
         public async Task<Tuple<bool, string>> AddUserRequestAsync(string studentNo)
         {
+            bool exists = await UserExistsAsync(studentNo).ConfigureAwait(false);
             Function addUserFunction = Contract.GetFunction("addUser");
-            Nethereum.RPC.Eth.DTOs.TransactionReceipt reciept = await addUserFunction.SendTransactionAndWaitForReceiptAsync(Variables.senderAddress,Variables.gas,null,null, new object[] { studentNo }).ConfigureAwait(false);
-            EventLog<AddUserLoggerEventDTO> added = reciept.DecodeAllEvents<AddUserLoggerEventDTO>()[0];
-            return new Tuple<bool, string>(added.Event.Results, added.Log.TransactionHash);
+            if (exists)
+            {
+                return new Tuple<bool, string>(true, "0x");
+            }
+            else
+            {
+                string reciept = await addUserFunction.SendTransactionAsync(Variables.senderAddress, Variables.gas, null, new object[] { studentNo }).ConfigureAwait(false);
+                exists = await UserExistsAsync(studentNo).ConfigureAwait(false);
+                return new Tuple<bool, string>(exists, reciept);
+            }
         }
-
+        public async Task<bool> UserExistsAsync(string studentNumber)
+        {
+            Function userExistsFunction = Contract.GetFunction("userExists");
+            bool exists = await userExistsFunction.CallAsync<bool>(new object[] { studentNumber }).ConfigureAwait(false);
+            return exists;
+        }
         public async Task<string> RegisterDockingStationRequestAsync(string name, string latitude, string longitude)
         {
             Function<RegisterDockingStationFunction> registerDockingStationFunction = Contract.GetFunction<RegisterDockingStationFunction>();
@@ -81,7 +93,7 @@ namespace RhodeIT.Services.RhodeIT
             foreach (string key in keys)
             {
 
-                Task<GetDockingStationOutputDTO> dockingStationReturnedValue = getDockingStationFunction.CallDeserializingToObjectAsync<GetDockingStationOutputDTO>(new object[] { key});
+                Task<GetDockingStationOutputDTO> dockingStationReturnedValue = getDockingStationFunction.CallDeserializingToObjectAsync<GetDockingStationOutputDTO>(new object[] { key });
                 GetDockingStationOutputDTO dockingStationDetails = dockingStationReturnedValue.Result;
                 DockingStaion dockingStation = new DockingStaion { DockingStationInformation = new VenueLocation { Name = dockingStationDetails.Name, Latitude = double.Parse(dockingStationDetails.Latitude, System.Globalization.CultureInfo.InvariantCulture), Longitude = double.Parse(dockingStationDetails.Longitude, System.Globalization.CultureInfo.InvariantCulture) } };
                 temp.Add(dockingStation);
