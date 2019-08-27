@@ -29,15 +29,20 @@ namespace RhodeIT.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
 
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public RidesViewModel()
         {
             SetUp();
         }
-
+        /// <summary>
+        /// Fetches data from the smart contract and creates Ride objects to be used by the neccessary View models
+        /// </summary>
         private void SetUp()
         {
             Rides = new ObservableCollection<Ride>();
-            for(int i=0; i < 51; i++)
+            for(int i=0; i < 5; i++)
             {
                 Rides.Add(new Ride { ID = i.ToString(), Docked = true, TransactionReciept = "0x6686491f125ab926f51b1ddf3b8ac370c902cb637a3fb6af2a9ef1b59df07a1a", Duration = i * 10000, StationName = "Hamilton" });
             }

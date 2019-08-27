@@ -15,14 +15,15 @@ namespace RhodeIT.Views
 	public partial class AvailableBicycles : SlideMenuView
     {
         AvailableBicylesViewModel viewModel;
-        int maxHeight = 350;
+        int maxHeight = 250;
         Command closeMenu;
 		public AvailableBicycles (string venue, Command showMenu, StackLayout main)
 		{
 			InitializeComponent ();
             closeMenu = new Command(CloseMenu());
-            viewModel = new AvailableBicylesViewModel(venue, showMenu, closeMenu,listView,main);
+            viewModel = new AvailableBicylesViewModel(venue, showMenu, closeMenu, bicycles);
             BindingContext = viewModel;
+            bicycles.WidthRequest = Application.Current.MainPage.Width;
 
          // You must set HeightRequest in this case
         HeightRequest = maxHeight;

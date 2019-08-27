@@ -14,7 +14,7 @@ namespace RhodeIT.Views
 {
 	public class MainMenuTab : ContentPage
     {
-        private MainMenuOptionsViewModel menuViewModel;
+        private MainMenuTabsViewModel menuViewModel;
         LoginDetails dets;
         RhodeITDB db;
         public MainMenuTab()
@@ -22,7 +22,7 @@ namespace RhodeIT.Views
             db = new RhodeITDB();
             dets = db.hasLoggedInBefore();
             Title = "Welcome "+dets.userID;
-            menuViewModel = new MainMenuOptionsViewModel();
+            menuViewModel = new MainMenuTabsViewModel();
             ToolbarItem logOut = new ToolbarItem { Text = "Logout", Order = ToolbarItemOrder.Primary, Priority = 1 };
             ToolbarItems.Add(new ToolbarItem("Logout", null, new Action(() => LogOut()), ToolbarItemOrder.Secondary, CheckPlatform()));
             Content = menuViewModel.main;

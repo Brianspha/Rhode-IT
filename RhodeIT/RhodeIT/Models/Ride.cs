@@ -16,7 +16,7 @@ namespace RhodeIT.Models
                 if (value != id)
                 {
                     id = value;
-                    OnPropertyChanged(nameof(ID));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(ID)));
                 }
             }
         }
@@ -27,7 +27,7 @@ namespace RhodeIT.Models
                 if (value != stationName)
                 {
                     stationName = value;
-                    OnPropertyChanged(nameof(StationName));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(StationName)));
                 }
             }
         }
@@ -39,7 +39,7 @@ namespace RhodeIT.Models
                 if (duration != value)
                 {
                     duration = value;
-                    OnPropertyChanged(nameof(Duration));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Duration)));
                 }
             }
         }
@@ -51,7 +51,7 @@ namespace RhodeIT.Models
                 if (value != docked)
                 {
                     docked = value;
-                    OnPropertyChanged(nameof(docked));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Docked)));
                 }
             }
         }
@@ -62,17 +62,18 @@ namespace RhodeIT.Models
                 if (value != reciept)
                 {
                     reciept = value;
-                    OnPropertyChanged(nameof(reciept));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(TransactionReciept)));
                 }
             }
         }
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string name)
+        /// <summary>
+        /// Invoked when a property is assigned a new value
+        /// </summary>
+        /// <param name="e"> property thats changed</param>
+        public void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
+            PropertyChanged?.Invoke(this,e);
         }
 
     }

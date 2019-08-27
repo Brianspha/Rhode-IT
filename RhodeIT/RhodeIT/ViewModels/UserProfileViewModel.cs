@@ -27,8 +27,9 @@ namespace RhodeIT.ViewModels
                 }
             }
         }
-        PurchaseRideCreditsViewModel PurchaseRideCreditsViewModel;
-        private CircleImage userImage;
+
+        private PurchaseRideCreditsViewModel PurchaseRideCreditsViewModel;
+        private readonly CircleImage userImage;
         private StackLayout main;
         public StackLayout Main
         {
@@ -45,11 +46,20 @@ namespace RhodeIT.ViewModels
 
         private RidesViewModel RidesViewModel;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public UserProfileViewModel()
         {
             SetUp();
         }
-
+        /// <summary>
+        /// Setsup the User Profile View to be used by the UserProfile View Page
+        /// Each part of the UI is created by several methods
+        /// CreateStudentNumberElements- Which creates all UI elements that show user details like student number
+        /// CreateUserInformationUIElements- Parents the user details created by the CreateStudentNumberElements method
+        /// InitialiseUpComingRidesList Initialises the list of rides the user has
+        /// </summary>
         private void SetUp()
         {
             PurchaseRideCreditsViewModel = new PurchaseRideCreditsViewModel();
@@ -58,82 +68,174 @@ namespace RhodeIT.ViewModels
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand
             };
-            StackLayout imageTopParent = new StackLayout
+            CreateStudentNumberElements(out MaterialCard studentNumberCard, out StackLayout studentNumberParent, out StackLayout topUpParent);
+            CreateUserInformationUIElements(out MaterialCard userInfoParent, studentNumberCard, topUpParent);
+            RidesViewModel = new RidesViewModel();
+            SfListView upComingrides = InitialiseUpComingRidesList();
+            MaterialCard upcomingRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 10, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
+            Label upComingLabel = new Label { Text = "Upcoming Rides", BackgroundColor = Color.White, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
+            upcomingRidesCardLabel.Content = new StackLayout { Children = { upComingLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
+            Main.Children.Add(userInfoParent);
+            Main.Children.Add(upcomingRidesCardLabel);
+            Main.Children.Add(upComingrides);
+        }
+
+        /// <summary>
+        /// Fetches all user upcoming rides from the RhodeIT Smartcontract and populates the listview
+        /// </summary>
+        /// <returns></returns>
+        private SfListView InitialiseUpComingRidesList()
+        {
+            return new SfListView
+            {
+                ItemSize = 350,
+                Orientation = Orientation.Horizontal,
+                ItemsSource = RidesViewModel.Rides,
+                LayoutManager = new LinearLayout(),
+                ItemTemplate = InitialiseUpcomingUserRidesDataTemplate()
+            };
+        }
+        /// <summary>
+        /// Initialises the DataTemplate to be used to populate the Listview
+        /// which renders all upcoming user rides
+        /// </summary>
+        /// <returns>DataTemplate</returns>
+        private static DataTemplate InitialiseUpcomingUserRidesDataTemplate()
+        {
+            return new DataTemplate(() =>
+            {
+                Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
+                Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station" };
+                stationName.SetBinding(Label.TextProperty, new Binding("StationName"));
+                Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID" };
+                Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15 };
+                bikeID.SetBinding(Label.TextProperty, new Binding("BikeID"));
+                Label duration = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
+                Label durationLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Duration" };
+                duration.SetBinding(Label.TextProperty, new Binding("Duration"));
+                Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
+                Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked" };
+                docked.SetBinding(Label.TextProperty, new Binding("Docked"));
+                SfButton details = new SfButton
+                {
+                    Text = "Details",
+                    BackgroundColor = Color.White,
+                    TextColor = Color.Black,
+                    CornerRadius = 20,
+                    BorderColor = Color.Black,
+                    BorderWidth = 1
+                };
+                SfButton cancel = new SfButton
+                {
+                    Text = "Cancel",
+                    BackgroundColor = Color.White,
+                    TextColor = Color.Black,
+                    BorderColor = Color.Black,
+                    BorderWidth = 1,
+                    CornerRadius = 20,
+
+
+                };
+                StackLayout bikeIDParent = new StackLayout
+                {
+                    VerticalOptions = LayoutOptions.FillAndExpand,
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    Orientation = StackOrientation.Horizontal,
+                    Children = {
+                            bikeIDLabel,bikeID
+                        }
+                };
+                StackLayout stationNameParent = new StackLayout
+                {
+                    VerticalOptions = LayoutOptions.FillAndExpand,
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    Orientation = StackOrientation.Horizontal,
+                    Children = {
+                            stationNameLabel,stationName
+                        }
+                };
+                StackLayout durationParent = new StackLayout
+                {
+                    VerticalOptions = LayoutOptions.FillAndExpand,
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    Orientation = StackOrientation.Horizontal,
+                    Children = {
+                            durationLabel,duration
+                        }
+                };
+                StackLayout dockedParent = new StackLayout
+                {
+                    VerticalOptions = LayoutOptions.FillAndExpand,
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                    Orientation = StackOrientation.Horizontal,
+                    Children = {
+                            dockedLabel,docked,
+                        }
+                };
+                StackLayout transactionRecieptParent = new StackLayout
+                {
+                    VerticalOptions = LayoutOptions.CenterAndExpand,
+                    HorizontalOptions = LayoutOptions.CenterAndExpand,
+                    Orientation = StackOrientation.Horizontal,
+                    Children = {
+                            details,cancel
+                        }
+                };
+                StackLayout parentInfo = new StackLayout
+                {
+                    VerticalOptions = LayoutOptions.FillAndExpand,
+                    HorizontalOptions = LayoutOptions.FillAndExpand,
+                };
+                MaterialCard parentInforCard = new MaterialCard
+                {
+                    Elevation = 5,
+                    BackgroundColor = Color.White
+                };
+                parentInfo.Children.Add(bikeIDParent);
+                parentInfo.Children.Add(stationNameParent);
+                parentInfo.Children.Add(durationParent);
+                parentInfo.Children.Add(dockedParent);
+                parentInfo.Children.Add(transactionRecieptParent);
+                parentInforCard.Content = parentInfo;
+                Frame cardFrame = new Frame
+                {
+                    HeightRequest = 80,
+                    CornerRadius = 5,
+                    BackgroundColor = Color.WhiteSmoke,
+                    Padding = 3,
+                    Content = parentInforCard
+                };
+                return cardFrame;
+            });
+        }
+
+        /// <summary>
+        /// Parents user related UI elements which indicate who the user is and how many ride credits they have
+        /// </summary>
+        /// <param name="userDetailsParent">The parent of the User details which is placed at the top of the Screen</param>
+        /// <param name="userDetailsLabelParent"> The parent layout of the specific user details such as student number and ride credit balance</param>
+        /// <param name="userInfoParent"></param>
+        /// <param name="studentNumberCard"> The material card which renders the students student number</param>
+        /// <param name="topUpParent">The material card which is used to render the option of purchasing new ride credits</param>
+        private static void CreateUserInformationUIElements(out MaterialCard userInfoParent, MaterialCard studentNumberCard, StackLayout topUpParent)
+        {
+            StackLayout userDetailsParent = new StackLayout
             {
                 VerticalOptions = LayoutOptions.StartAndExpand,
                 HorizontalOptions = LayoutOptions.CenterAndExpand
             };
-            userImage = new CircleImage
-            {
-                HeightRequest = 250,
-                WidthRequest = 250,
-                Aspect = Aspect.AspectFill,
-                HorizontalOptions = LayoutOptions.Center,
-                Source = ImageSource.FromUri(new Uri("http://oi68.tinypic.com/25s8nf5.jpg")),
-                Opacity = 100
-            };
-
             StackLayout userDetailsLabelParent = new StackLayout
             {
                 Orientation = StackOrientation.Horizontal,
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand
             };
-            MaterialCard userInfoParent = new MaterialCard
+            userInfoParent = new MaterialCard
             {
                 Elevation = 10,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 IsClickable = true
             };
-
-
-            //@dev student element
-            Label studentNumberLabel = new Label
-            {
-                Text = "Student No",
-                FontSize = 16,
-                TextColor = Color.Black
-            };
-            MaterialCard studentNumberCard = new MaterialCard
-            {
-                BackgroundColor = Color.Transparent,
-                Elevation = 10,
-            };
-            Label studentNumber = new Label
-            {
-                Text = "g14m1190",
-                TextColor = Color.Black
-            };
-            SfButton TopUp = new SfButton
-            {
-                Text = "Purchase Ride Credits",
-                CornerRadius = 20,
-                WidthRequest = 100,
-                BackgroundColor=Color.White,
-                TextColor=Color.Black,
-                BorderColor=Color.Black,
-                BorderWidth=1
-
-            };
-            TopUp.Clicked += TopUp_Clicked;
-            StackLayout studentNumberParent = new StackLayout
-            {
-                VerticalOptions = LayoutOptions.CenterAndExpand,
-                HorizontalOptions = LayoutOptions.CenterAndExpand
-            };
-            studentNumberParent.Children.Add(studentNumberLabel);
-            studentNumberParent.Children.Add(studentNumber);
-            StackLayout topUpParent = new StackLayout
-            {
-                VerticalOptions = LayoutOptions.CenterAndExpand,
-                HorizontalOptions = LayoutOptions.CenterAndExpand,
-                Children ={
-                    TopUp
-                    }
-            };
-            studentNumberCard.Content = studentNumberParent;
-
-            //@dev ridecredits elements
             Label rideCreditsLabel = new Label
             {
                 Text = "Ride Credits",
@@ -162,137 +264,72 @@ namespace RhodeIT.ViewModels
 
             userDetailsLabelParent.Children.Add(studentNumberCard);
             userDetailsLabelParent.Children.Add(rideCreditsCard);
-            imageTopParent.Children.Add(userDetailsLabelParent);
-            imageTopParent.Children.Add(topUpParent);
-            userInfoParent.Content = imageTopParent;
+            userDetailsParent.Children.Add(userDetailsLabelParent);
+            userDetailsParent.Children.Add(topUpParent);
+            userInfoParent.Content = userDetailsParent;
 
-            RidesViewModel = new RidesViewModel();
-            SfListView upComingrides = new SfListView
+        }
+        /// <summary>
+        /// Creates the UI elements that will be used to render the users details such as student number and ride credits
+        /// </summary>
+        /// <param name="studentNumberCard"> The parent material card that renders a students details</param>
+        /// <param name="studentNumberParent">The parent of the studentNumber card</param>
+        /// <param name="topUpParent">The Parent of the button which allows the user to top they ride credits</param>
+        private void CreateStudentNumberElements(out MaterialCard studentNumberCard, out StackLayout studentNumberParent, out StackLayout topUpParent)
+        {
+            Label studentNumberLabel = new Label
             {
-                ItemSize = 350,
-                Orientation = Orientation.Horizontal,
-                ItemsSource = RidesViewModel.Rides,
-                LayoutManager = new GridLayout() { SpanCount = 2 },
-                ItemTemplate = new DataTemplate(() =>
-                {
-                    Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                    Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station" };
-                    stationName.SetBinding(Label.TextProperty, new Binding("StationName"));
-                    Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID" };
-                    Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15 };
-                    bikeID.SetBinding(Label.TextProperty, new Binding("BikeID"));
-                    Label duration = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                    Label durationLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Duration" };
-                    duration.SetBinding(Label.TextProperty, new Binding("Duration"));
-                    Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                    Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked" };
-                    docked.SetBinding(Label.TextProperty, new Binding("Docked"));
-                    Label transactionReciept = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                    Label transactionRecieptLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "TransactionReceipt" };
-                    transactionReciept.SetBinding(Label.TextProperty, new Binding("TransactionReciept"));
-                    SfButton details = new SfButton
-                    {
-                        Text = "Details",
-                        BackgroundColor = Color.White,
-                        TextColor = Color.Black,
-                        CornerRadius = 20,
-                        BorderColor = Color.Black,
-                        BorderWidth = 1
-                    };
-                    SfButton cancel = new SfButton
-                    {
-                        Text = "Cancel",
-                        BackgroundColor = Color.White,
-                        TextColor = Color.Black,
-                        BorderColor = Color.Black,
-                        BorderWidth = 1,
-                        CornerRadius = 20,
-
-
-                    };
-                    StackLayout bikeIDParent = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Children = {
-                            bikeIDLabel,bikeID
-                        }
-                    };
-                    StackLayout stationNameParent = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Children = {
-                            stationNameLabel,stationName
-                        }
-                    };
-                    StackLayout durationParent = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Children = {
-                            durationLabel,duration
-                        }
-                    };
-                    StackLayout dockedParent = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Children = {
-                            dockedLabel,docked,
-                        }
-                    };
-                    StackLayout transactionRecieptParent = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.CenterAndExpand,
-                        HorizontalOptions = LayoutOptions.CenterAndExpand,
-                        Orientation = StackOrientation.Horizontal,
-                        Children = {
-                            details,cancel
-                        }
-                    };
-                    StackLayout parentInfo = new StackLayout
-                    {
-                        VerticalOptions = LayoutOptions.FillAndExpand,
-                        HorizontalOptions = LayoutOptions.FillAndExpand,
-                    };
-                    MaterialCard parentInforCard = new MaterialCard
-                    {
-                        Elevation = 5,
-                        BackgroundColor = Color.White
-                    };
-                    parentInfo.Children.Add(bikeIDParent);
-                    parentInfo.Children.Add(stationNameParent);
-                    parentInfo.Children.Add(durationParent);
-                    parentInfo.Children.Add(dockedParent);
-                    parentInfo.Children.Add(transactionRecieptParent);
-                    parentInforCard.Content = parentInfo;
-                    Frame cardFrame = new Frame
-                    {
-                        HeightRequest = 80,
-                        CornerRadius = 5,
-                        BackgroundColor = Color.WhiteSmoke,
-                        Padding = 3,
-                        Content = parentInforCard
-                    };
-
-                    return cardFrame;
-                })
+                Text = "Student No",
+                FontSize = 16,
+                TextColor = Color.Black
             };
+            studentNumberCard = new MaterialCard
+            {
+                BackgroundColor = Color.Transparent,
+                Elevation = 10,
+            };
+            Label studentNumber = new Label
+            {
+                Text = "g14m1190",
+                TextColor = Color.Black
+            };
+            SfButton TopUp = new SfButton
+            {
+                Text = "Purchase Ride Credits",
+                CornerRadius = 20,
+                WidthRequest = 100,
+                BackgroundColor = Color.White,
+                TextColor = Color.Black,
+                BorderColor = Color.Black,
+                BorderWidth = 1
 
-            MaterialCard upcomingRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 10, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
-
-            Label upComingLabel = new Label { Text = "Upcoming Rides", BackgroundColor = Color.White, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
-            upcomingRidesCardLabel.Content = new StackLayout { Children = { upComingLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
-            Main.Children.Add(userInfoParent);
-            Main.Children.Add(upcomingRidesCardLabel);
-            Main.Children.Add(upComingrides);
+            };
+            TopUp.Clicked += TopUp_Clicked;
+            studentNumberParent = new StackLayout
+            {
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.CenterAndExpand
+            };
+            studentNumberParent.Children.Add(studentNumberLabel);
+            studentNumberParent.Children.Add(studentNumber);
+            topUpParent = new StackLayout
+            {
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                Children ={
+                    TopUp
+                    }
+            };
+            studentNumberCard.Content = studentNumberParent;
         }
 
+        /// <summary>
+        /// Invoked when a user clicks on the topup button 
+        /// used to purchase Ride credits which can inturn used for 
+        /// renting out bicycles
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TopUp_Clicked(object sender, EventArgs e)
         {
             PurchaseRideCreditsViewModel.PopupLayout.Show();
@@ -300,7 +337,7 @@ namespace RhodeIT.ViewModels
 
 
         /// <summary>
-        /// Ons the property changed.
+        /// Invoked when a property is assingned a new value
         /// </summary>
         /// <param name="propertyName">Property name.</param>
         private void OnPropertyChanged(string propertyName)

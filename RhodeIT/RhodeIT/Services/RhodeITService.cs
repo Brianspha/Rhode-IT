@@ -51,6 +51,9 @@ namespace RhodeIT.Services.RhodeIT
             bool exists = await userExistsFunction.CallAsync<bool>(new object[] { studentNumber }).ConfigureAwait(false);
             return exists;
         }
+
+
+
         public async Task<string> RegisterDockingStationRequestAsync(string name, string latitude, string longitude)
         {
             Function<RegisterDockingStationFunction> registerDockingStationFunction = Contract.GetFunction<RegisterDockingStationFunction>();
@@ -99,6 +102,15 @@ namespace RhodeIT.Services.RhodeIT
                 temp.Add(dockingStation);
             }
             return temp;
+        }
+        public ObservableCollection<Bicycle> GetAvailableBicyclesFromDockingStation(string name)
+        {
+            ObservableCollection<Bicycle> bicycles = new ObservableCollection<Bicycle>();
+            for (int i = 0; i < 5; i++)
+            {
+                bicycles.Add(new Bicycle { ID = new Random().Next(0, i * 3), BikeName = name, Status = false, Model = i.ToString() });
+            }
+            return bicycles;
         }
     }
 }

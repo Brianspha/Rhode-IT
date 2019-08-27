@@ -9,7 +9,7 @@ using Xamarin.Forms;
 
 namespace RhodeIT.ViewModels
 {
-    public class MainMenuOptionsViewModel : INotifyPropertyChanged
+    public class MainMenuTabsViewModel : INotifyPropertyChanged
     {
         private int startTabIndex { get; set; }
         public Grid main { get; private set; }
@@ -86,7 +86,7 @@ namespace RhodeIT.ViewModels
         /// <summary>
         /// Defualt constructor
         /// </summary>
-        public MainMenuOptionsViewModel()
+        public MainMenuTabsViewModel()
         {
             setUp();
         }

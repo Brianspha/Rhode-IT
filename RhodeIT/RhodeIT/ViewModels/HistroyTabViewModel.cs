@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RhodeIT.ViewModels
 {
-    class HistroyTabViewModel
+    public class HistroyTabViewModel
     {
     }
 }

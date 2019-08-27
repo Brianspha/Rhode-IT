@@ -21,7 +21,6 @@ namespace RhodeIT.ViewModels
 
             PopUpContents = new DataTemplate(() =>
             {
-
                 SfTextInputLayout rideCreditsInputLayout = new SfTextInputLayout
                 {
                     Hint = "Amount",

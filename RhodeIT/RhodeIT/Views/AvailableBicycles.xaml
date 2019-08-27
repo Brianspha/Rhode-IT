@@ -15,8 +15,9 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Label Text="{Binding Name}" FontSize="24" Grid.ColumnSpan="2" XAlign="Center" YAlign="Center" TextColor="Black" />
-
-        <Button Grid.ColumnSpan="2" Grid.Row="4" Text="Close" TextColor="Black" FontSize="13" BorderRadius="5" BorderWidth="1" BackgroundColor="WhiteSmoke" Command="{Binding Close}"/>
+        <StackLayout x:Name="bicycles" VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" HeightRequest="400" >
+            <Label Text="{Binding Name}" FontSize="24" Grid.ColumnSpan="2" XAlign="Center" YAlign="Center" TextColor="Black" />
+            <Button Grid.ColumnSpan="2" Grid.Row="4" Text="Close" TextColor="Black" FontSize="13" BorderRadius="5" BorderWidth="1" BackgroundColor="WhiteSmoke" Command="{Binding Close}"/>
+        </StackLayout>
     </Grid>
 </t:SlideMenuView>
