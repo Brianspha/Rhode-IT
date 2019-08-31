@@ -1,10 +1,7 @@
 ﻿using Prism.Navigation;
 using RhodeIT.Views;
 using Syncfusion.XForms.TabView;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using Xamarin.Forms;
 
 namespace RhodeIT.ViewModels
@@ -21,65 +18,53 @@ namespace RhodeIT.ViewModels
         public string Title = "Rhode IT";
         public TabItemCollection Tabs
         {
-            get
-            {
-                return tabs;
-            }
+            get => tabs;
             set
             {
-                if (value != Tabs)
+                if (value != tabs)
                 {
                     tabs = value;
                     Count = tabs.Count;
-                    OnPropertyChanged(nameof(Tabs));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Tabs)));
                 }
             }
 
         }
         public int StartIndex
         {
-            get
-            {
-                return startTabIndex;
-            }
+            get => startTabIndex;
             set
             {
                 if (value != StartIndex)
                 {
                     startTabIndex = value;
-                    mainTabView.SelectedIndex = startTabIndex;
-                    OnPropertyChanged(nameof(StartIndex));
+                    MainTabView.SelectedIndex = startTabIndex;
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(StartIndex)));
 
                 }
             }
         }
         public int Count
         {
-            get
-            {
-                return count;
-            }
+            get => count;
             set
             {
                 if (value != Count)
                 {
                     count = value;
-                    OnPropertyChanged(nameof(Count));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Count)));
                 }
             }
         }
-        public SfTabView mainTabView
+        public SfTabView MainTabView
         {
-            get
-            {
-                return tabView;
-            }
+            get => tabView;
             set
             {
-                if (value != mainTabView)
+                if (value != tabView)
                 {
                     tabView = value;
-                    OnPropertyChanged(nameof(mainTabView));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(MainTabView)));
                 }
             }
         }
@@ -88,13 +73,16 @@ namespace RhodeIT.ViewModels
         /// </summary>
         public MainMenuTabsViewModel()
         {
-            setUp();
+            SetUp();
         }
 
-        public void setUp()
+        /// <summary>
+        /// Sets up the main menu tabs view with its contents
+        /// </summary>
+        public void SetUp()
         {
             main = new Grid { BackgroundColor = Color.White };
-            Tabs = new TabItemCollection { new SfTabItem { Title = "Profile", Content = new UserProfile().Content }, new SfTabItem { Title = "Docking Stations", Content = new MapsTab().Content }, new SfTabItem { Title = "History", Content = new HistoryTab().Content } };
+            Tabs = new TabItemCollection { new SfTabItem { Title = "Profile", Content = new UserProfile().Content}, new SfTabItem { Title = "Docking Stations", Content = new MapsTab().Content, ImageSource = "https://banner2.kisspng.com/20180327/ziq/kisspng-computer-icons-user-profile-avatar-profile-5ab9c9868b8c84.1893767815221251905716.jpg" }, new SfTabItem { Title = "History", Content = new HistoryTab().Content, ImageSource = "https://banner2.kisspng.com/20180327/ziq/kisspng-computer-icons-user-profile-avatar-profile-5ab9c9868b8c84.1893767815221251905716.jpg" } };
             Count = tabs.Count;
             tabView = new SfTabView() { SelectedIndex = startTabIndex, DisplayMode = TabDisplayMode.ImageWithText, EnableSwiping = true, BackgroundColor = Color.WhiteSmoke, Items = tabs, VisibleHeaderCount = count };
             tabView.SelectionIndicatorSettings.Position = SelectionIndicatorPosition.Top;
@@ -102,27 +90,15 @@ namespace RhodeIT.ViewModels
             tabView.TabHeaderPosition = TabHeaderPosition.Bottom;
             main.Children.Add(tabView);
         }
-        /// <summary>
-        /// Adds new tab to the tab collection
-        /// </summary>
-        /// <param name="newtab">Tab to be added</param>
-        public void addTab(SfTabItem newtab)
-        {
-            Tabs.Add(newtab);
-            Count = Tabs.Count;
-        }
+
 
         /// <summary>
-        /// Ons the property changed.
+        /// Invoked when a property is assigned a new value
         /// </summary>
-        /// <param name="propertyName">Property name.</param>
-        void OnPropertyChanged(string propertyName)
+        /// <param name="e"> property thats changed</param>
+        public void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            //PropertyChangedEventHandler eventHandler = this.PropertyChanged;
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, e);
         }
     }
 }

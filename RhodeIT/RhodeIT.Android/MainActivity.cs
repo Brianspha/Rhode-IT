@@ -19,6 +19,7 @@ namespace RhodeIT.Droid
             ToolbarResource = Resource.Layout.Toolbar;
             base.OnCreate(savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            XamEffects.Droid.Effects.Init();
             ImageCircleRenderer.Init();
             Syncfusion.XForms.Android.PopupLayout.SfPopupLayoutRenderer.Init();
             Xamarin.FormsGoogleMaps.Init(this, savedInstanceState); // initialize for Xamarin.Forms.GoogleMaps

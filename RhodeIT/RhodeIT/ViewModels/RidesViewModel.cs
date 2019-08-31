@@ -22,7 +22,7 @@ namespace RhodeIT.ViewModels
                 if (value != rides)
                 {
                     rides = value;
-                    OnPropertyChanged(nameof(Rides));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Rides)));
                 }
             }
         }
@@ -49,16 +49,12 @@ namespace RhodeIT.ViewModels
         }
 
         /// <summary>
-        /// Ons the property changed.
+        /// Invoked when a property is assigned a new value
         /// </summary>
-        /// <param name="propertyName">Property name.</param>
-        private void OnPropertyChanged(string propertyName)
+        /// <param name="e"> property thats changed</param>
+        public void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, e);
         }
 
 

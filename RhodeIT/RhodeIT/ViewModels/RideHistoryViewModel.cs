@@ -3,6 +3,7 @@ using Syncfusion.ListView.XForms;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Xamarin.Forms;
+using XamEffects;
 using XF.Material.Forms.UI;
 
 namespace RhodeIT.ViewModels
@@ -67,8 +68,8 @@ namespace RhodeIT.ViewModels
                 LayoutManager = new LinearLayout(),
                 ItemTemplate = InitialiseListTemplates()
             };
-            MaterialCard historyRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 10, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
-            Label historyRidesLabel = new Label { Text = "Past Rides", BackgroundColor = Color.White, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
+            MaterialCard historyRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 4, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
+            Label historyRidesLabel = new Label { Text = "Past Rides", BackgroundColor = Color.White, FontSize = 18, TextColor=Color.Black,FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
             historyRidesCardLabel.Content = new StackLayout { Children = { historyRidesLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
             rides.Children.Add(historyRidesCardLabel);
             rides.Children.Add(pastRides);
@@ -84,20 +85,20 @@ namespace RhodeIT.ViewModels
         {
             return new DataTemplate(() =>
             {
-                Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station" };
+                Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
+                Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station", TextColor = Color.Black };
                 stationName.SetBinding(Label.TextProperty, new Binding("StationName"));
-                Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID" };
-                Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15 };
+                Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID", TextColor = Color.Black };
+                Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15,TextColor=Color.Black };
                 bikeID.SetBinding(Label.TextProperty, new Binding("BikeID"));
-                Label duration = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                Label durationLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Duration" };
+                Label duration = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
+                Label durationLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Duration", TextColor = Color.Black };
                 duration.SetBinding(Label.TextProperty, new Binding("Duration"));
-                Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked" };
+                Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
+                Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked", TextColor = Color.Black };
                 docked.SetBinding(Label.TextProperty, new Binding("Docked"));
-                Label transactionReciept = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                Label transactionRecieptLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "TransactionReceipt" };
+                Label transactionReciept = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
+                Label transactionRecieptLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "TransactionReceipt", TextColor = Color.Black };
                 transactionReciept.SetBinding(Label.TextProperty, new Binding("TransactionReciept"));
 
                 StackLayout bikeIDParent = new StackLayout

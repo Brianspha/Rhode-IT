@@ -4,6 +4,7 @@ using Syncfusion.XForms.Buttons;
 using System;
 using System.ComponentModel;
 using Xamarin.Forms;
+using XamEffects;
 using XF.Material.Forms.UI;
 
 namespace RhodeIT.ViewModels
@@ -71,13 +72,13 @@ namespace RhodeIT.ViewModels
             CreateStudentNumberElements(out MaterialCard studentNumberCard, out StackLayout studentNumberParent, out StackLayout topUpParent);
             CreateUserInformationUIElements(out MaterialCard userInfoParent, studentNumberCard, topUpParent);
             RidesViewModel = new RidesViewModel();
-            SfListView upComingrides = InitialiseUpComingRidesList();
-            MaterialCard upcomingRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 10, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
-            Label upComingLabel = new Label { Text = "Upcoming Rides", BackgroundColor = Color.White, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
+            MyRides = InitialiseUpComingRidesList();
+            MaterialCard upcomingRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 5, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
+            Label upComingLabel = new Label { Text = "Upcoming Rides", BackgroundColor = Color.White, TextColor = Color.Black, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
             upcomingRidesCardLabel.Content = new StackLayout { Children = { upComingLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
             Main.Children.Add(userInfoParent);
             Main.Children.Add(upcomingRidesCardLabel);
-            Main.Children.Add(upComingrides);
+            Main.Children.Add(MyRides);
         }
 
         /// <summary>
@@ -104,17 +105,17 @@ namespace RhodeIT.ViewModels
         {
             return new DataTemplate(() =>
             {
-                Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station" };
+                Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
+                Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station", TextColor = Color.Black };
                 stationName.SetBinding(Label.TextProperty, new Binding("StationName"));
-                Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID" };
-                Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15 };
+                Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID", TextColor = Color.Black };
+                Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
                 bikeID.SetBinding(Label.TextProperty, new Binding("BikeID"));
-                Label duration = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                Label durationLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Duration" };
+                Label duration = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
+                Label durationLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Duration", TextColor = Color.Black };
                 duration.SetBinding(Label.TextProperty, new Binding("Duration"));
-                Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
-                Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked" };
+                Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
+                Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked", TextColor = Color.Black };
                 docked.SetBinding(Label.TextProperty, new Binding("Docked"));
                 SfButton details = new SfButton
                 {
@@ -189,7 +190,8 @@ namespace RhodeIT.ViewModels
                 MaterialCard parentInforCard = new MaterialCard
                 {
                     Elevation = 5,
-                    BackgroundColor = Color.White
+                    BackgroundColor = Color.White,
+                    IsClickable = true
                 };
                 parentInfo.Children.Add(bikeIDParent);
                 parentInfo.Children.Add(stationNameParent);
@@ -205,6 +207,7 @@ namespace RhodeIT.ViewModels
                     Padding = 3,
                     Content = parentInforCard
                 };
+                Commands.SetTapParameter(cardFrame, Color.SkyBlue);
                 return cardFrame;
             });
         }
@@ -246,6 +249,7 @@ namespace RhodeIT.ViewModels
             {
                 BackgroundColor = Color.Transparent,
                 Elevation = 10,
+                IsClickable = true
             };
             StackLayout rideCreditsParent = new StackLayout
             {
@@ -260,8 +264,6 @@ namespace RhodeIT.ViewModels
             rideCreditsParent.Children.Add(rideCreditsLabel);
             rideCreditsParent.Children.Add(rideCredits);
             rideCreditsCard.Content = rideCreditsParent;
-
-
             userDetailsLabelParent.Children.Add(studentNumberCard);
             userDetailsLabelParent.Children.Add(rideCreditsCard);
             userDetailsParent.Children.Add(userDetailsLabelParent);

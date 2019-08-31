@@ -2,6 +2,7 @@
 using RhodeIT.Helpers;
 using RhodeIT.Models;
 using RhodeIT.Views;
+using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -15,6 +16,9 @@ namespace RhodeIT
         public static double ScreenWidth;
         public App()
         {
+            ICollection<ResourceDictionary> mergedDictionaries = Current.Resources.MergedDictionaries;
+            mergedDictionaries.Clear();
+            mergedDictionaries.Add(new LightTheme());
             XF.Material.Forms.Material.Init(this);
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Variables.SyncFusionLicense);
             db = new RhodeITDB();
