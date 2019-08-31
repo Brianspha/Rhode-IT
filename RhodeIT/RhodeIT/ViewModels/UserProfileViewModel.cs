@@ -1,4 +1,5 @@
 ﻿using ImageCircle.Forms.Plugin.Abstractions;
+using RhodeIT.Databases;
 using Syncfusion.ListView.XForms;
 using Syncfusion.XForms.Buttons;
 using System;
@@ -11,8 +12,7 @@ namespace RhodeIT.ViewModels
 {
     public class UserProfileViewModel
     {
-
-
+        private string userID;
         private SfListView myRides;
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -64,6 +64,8 @@ namespace RhodeIT.ViewModels
         private void SetUp()
         {
             PurchaseRideCreditsViewModel = new PurchaseRideCreditsViewModel();
+            RhodeITDB db = new RhodeITDB();
+            userID = db.hasLoggedInBefore().userID;
             Main = new StackLayout
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
@@ -292,7 +294,7 @@ namespace RhodeIT.ViewModels
             };
             Label studentNumber = new Label
             {
-                Text = "g14m1190",
+                Text = userID,
                 TextColor = Color.Black
             };
             SfButton TopUp = new SfButton

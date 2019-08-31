@@ -16,23 +16,20 @@ namespace RhodeIT
         public static double ScreenWidth;
         public App()
         {
-            ICollection<ResourceDictionary> mergedDictionaries = Current.Resources.MergedDictionaries;
-            mergedDictionaries.Clear();
-            mergedDictionaries.Add(new LightTheme());
+            Current.Resources.MergedDictionaries.Clear();
+            Current.Resources.MergedDictionaries.Add(new LightTheme());
             XF.Material.Forms.Material.Init(this);
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Variables.SyncFusionLicense);
             db = new RhodeITDB();
             LoginDetails dets = db.hasLoggedInBefore();
-            Current.MainPage = new NavigationPage(new MainMenuTab());
-
-            //if (!string.IsNullOrEmpty(dets.userID))
-            //{
-            //    Current.MainPage = new NavigationPage(new MainMenuTab());
-            //}
-            //else
-            //{
-            //    Current.MainPage = new LoginPage();
-            //}
+            if (!string.IsNullOrEmpty(dets.userID))
+            {
+                Current.MainPage = new NavigationPage(new MainMenuTab());
+            }
+            else
+            {
+                Current.MainPage = new LoginPage();
+            }
         }
     }
 }
