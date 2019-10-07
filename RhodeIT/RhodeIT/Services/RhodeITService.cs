@@ -30,9 +30,9 @@ namespace RhodeIT.Services.RhodeIT
             ContractHandler = Web3.Eth.GetContractHandler(Variables.ContractAddress);
         }
 
-        public async Task<Tuple<bool, string>> AddUserRequestAsync(string studentNo)
+        public async Task<Tuple<bool, string>> AddUserRequestAsync(string stud_no,string user_ethereum_address)
         {
-            bool exists = await UserExistsAsync(studentNo).ConfigureAwait(false);
+            bool exists = await UserExistsAsync(user_ethereum_address).ConfigureAwait(false);
             Function addUserFunction = Contract.GetFunction("addUser");
             if (exists)
             {
@@ -40,34 +40,21 @@ namespace RhodeIT.Services.RhodeIT
             }
             else
             {
-                string reciept = await addUserFunction.SendTransactionAsync(Variables.senderAddress, Variables.gas, null, new object[] { studentNo }).ConfigureAwait(false);
-                exists = await UserExistsAsync(studentNo).ConfigureAwait(false);
+                string reciept = await addUserFunction.SendTransactionAsync(Variables.senderAddress, Variables.gas, null, new object[] { stud_no }).ConfigureAwait(false);
+                exists = await UserExistsAsync(user_ethereum_address).ConfigureAwait(false);
                 return new Tuple<bool, string>(exists, reciept);
             }
         }
-        public async Task<bool> UserExistsAsync(string studentNumber)
+        public async Task<bool> UserExistsAsync(string user_eth_address)
         {
             Function userExistsFunction = Contract.GetFunction("userExists");
-            bool exists = await userExistsFunction.CallAsync<bool>(new object[] { studentNumber }).ConfigureAwait(false);
+            bool exists = await userExistsFunction.CallDeserializingToObjectAsync<bool>(user_eth_address,Variables.gas,0,null).ConfigureAwait(false);
             return exists;
         }
 
 
 
-        public async Task<string> RegisterDockingStationRequestAsync(string name, string latitude, string longitude)
-        {
-            Function<RegisterDockingStationFunction> registerDockingStationFunction = Contract.GetFunction<RegisterDockingStationFunction>();
-            RegisterDockingStationFunction functionInput = new RegisterDockingStationFunction
-            {
-                FromAddress = Variables.senderAddress,
-                Name = name,
-                Latitude = latitude,
-                Longitude = longitude
-            };
-            Nethereum.RPC.Eth.DTOs.TransactionReceipt reciept = await ContractHandler.SendRequestAndWaitForReceiptAsync(functionInput, null).ConfigureAwait(false);
-            bool results = DockingStationExistsRequestAsync(name, latitude, longitude).Result;
-            return reciept.TransactionHash;
-        }
+
 
         public async Task<bool> DockingStationExistsRequestAsync(string name, string latitude, string longitude)
         {

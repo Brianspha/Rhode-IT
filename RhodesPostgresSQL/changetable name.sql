@@ -1,2 +1,2 @@
 ﻿ALTER TABLE student
-  RENAME TO students;
+  RENAME TO student_staff;

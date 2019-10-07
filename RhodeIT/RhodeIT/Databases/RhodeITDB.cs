@@ -69,11 +69,11 @@ namespace RhodeIT.Databases
         /// <param name="dets">login credentials of user</param>
         public void Login(LoginDetails dets)
         {
-            CrossSecureStorage.Current.SetValue("Password", dets.password);
-            CrossSecureStorage.Current.SetValue("ID", dets.userID);
+            CrossSecureStorage.Current.SetValue("Password", dets.Password);
+            CrossSecureStorage.Current.SetValue("ID", dets.User_ID);
             db.Write(() =>
             {
-                dets.password = "";//@dev we dont store password in realm db since we keeping that in securestorage
+                dets.Password = "";//@dev we dont store password in realm db since we keeping that in securestorage
                 db.Add(dets, true);
             });
             Console.WriteLine("Logged in");
@@ -87,7 +87,7 @@ namespace RhodeIT.Databases
             LoginDetails temp = new LoginDetails();
             try
             {
-                temp = new LoginDetails { userID = CrossSecureStorage.Current.GetValue("ID"), password = CrossSecureStorage.Current.GetValue("Password") };
+                temp = new LoginDetails { User_ID = CrossSecureStorage.Current.GetValue("ID"), Password = CrossSecureStorage.Current.GetValue("Password") };
             }
             catch
             {

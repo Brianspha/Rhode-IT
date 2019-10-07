@@ -37,27 +37,42 @@ namespace RhodeIT.Databases
                 Console.WriteLine(e.Message);
             }
         }
-        public async Task<bool> VerifyStudentAysnc(LoginDetails details)
+        public async Task<Tuple<bool, LoginDetails>> VerifyStudentAysnc(LoginDetails details)
         {
             bool found = false;
             using (NpgsqlConnection connection = new NpgsqlConnection(Variables.connectionStringRhodesDB))
             {
                 connection.Open();
-                NpgsqlCommand command = new NpgsqlCommand("select * from students where studentno=" + "'" + details.userID + "'" + ";", connection);
+                NpgsqlCommand command = new NpgsqlCommand("select * from student_staff where student_staff_id=" + "'" + details.User_ID + "'" + ";", connection);
                 NpgsqlDataReader dataReader = command.ExecuteReader();
                 dataReader.Read();
-                var stdNumber = dataReader[2].ToString();
+                var user_id = dataReader[2].ToString();
                 var password = dataReader[1].ToString();
-                found = stdNumber == details.userID && password == details.password;
+                var eth_address = dataReader[3].ToString();
+                details.Ethereum_Address = eth_address;
+                found = user_id == details.User_ID && password == details.Password;
                 if (!found)
                 {
-                    throw new LoginException("Invalid login credentials please ensure they match the ones you use to access ross or runconnected");
+                    throw new LoginException("Invalid login credentials please ensure they match the ones you use to access ross or ruconnected");
                 }
                 connection.Close();
                 command.Dispose();
                 dataReader.Close();
             }
-            return await Task.FromResult(found);
+            return await Task.FromResult(new Tuple<bool,LoginDetails>(found,details));
+        }
+        public async Task<string> GetUserEthAddress(string user_id)
+        {
+            string eth_address = "";
+            using (NpgsqlConnection connection = new NpgsqlConnection(Variables.connectionStringRhodesDB))
+            {
+                connection.Open();
+                NpgsqlCommand command = new NpgsqlCommand("select * from student_staff where student_staff_id=" + "'" + user_id + "'" + ";", connection);
+                NpgsqlDataReader dataReader = command.ExecuteReader();
+                dataReader.Read();
+                eth_address = dataReader[3].ToString();
+            }
+            return await Task.FromResult(eth_address);
         }
     }
 }

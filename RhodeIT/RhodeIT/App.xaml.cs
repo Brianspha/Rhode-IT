@@ -22,7 +22,7 @@ namespace RhodeIT
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Variables.SyncFusionLicense);
             db = new RhodeITDB();
             LoginDetails dets = db.hasLoggedInBefore();
-            if (!string.IsNullOrEmpty(dets.userID))
+            if (!string.IsNullOrEmpty(dets.User_ID))
             {
                 Current.MainPage = new NavigationPage(new MainMenuTab());
             }

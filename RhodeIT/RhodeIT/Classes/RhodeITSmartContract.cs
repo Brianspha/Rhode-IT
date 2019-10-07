@@ -44,8 +44,6 @@ namespace RhodeIT.Classes
             web3.TransactionManager.DefaultGas = new System.Numerics.BigInteger(8000000);
             web3.TransactionManager.DefaultGasPrice = new System.Numerics.BigInteger(20000000000);
             SmartContractFunctions = new RhodeITService();
-            //var transactionHash= await SmartContractFunctions.DeployContractAsync(web3, BaseContract);
-            //Console.WriteLine("Deployed Contract: " + transactionHash);
         }
         /// <summary>
         /// @dev function that allows user to login this function also adds users to the smartcontracts storage users dont not need to register university credentials will be sufficient
@@ -53,13 +51,14 @@ namespace RhodeIT.Classes
         /// <param name="studentNo">student number</param>
         /// <param name="password">password</param>
         /// <returns>if the login was succefull or not</returns>
-        public async void RegisterStudent(string studentNo, string password)
+        public async void RegisterStudent(LoginDetails details)
         {
-            studentNo = studentNo.ToLower();
+            details.User_ID = details.User_ID.ToLower();
             string Thash = "";
-            Tuple<bool, string> results = await SmartContractFunctions.AddUserRequestAsync(studentNo);
+            Tuple<bool, string> results = await SmartContractFunctions.AddUserRequestAsync(details.User_ID,details.Ethereum_Address);
             Thash = results.Item2;
-            rhodeITDB.Login(new LoginDetails { userID = studentNo, password = password, TransactionHash = Thash });
+            details.TransactionHash = Thash;
+            rhodeITDB.Login(details);
         }
 
     }

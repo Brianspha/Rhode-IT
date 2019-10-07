@@ -118,7 +118,7 @@ namespace RhodeIT.ViewModels
                 WidthRequest = 100,
                 Aspect = Aspect.AspectFill,
                 HorizontalOptions = LayoutOptions.Center,
-                Source = ImageSource.FromUri(new Uri("http://oi68.tinypic.com/25s8nf5.jpg")),
+                Source = ImageSource.FromUri(new Uri("https://lh3.googleusercontent.com/m_1Pc3Sfge_muByZBS1KVgwvDYSQldlfmKkOV4QBqRwoyaf2zPQxRiXLjckmCctk-o1X=s85")),
                 Opacity=100
             };
             PagelabelStackLayOut.Children.Add(LoginPageIcon);
@@ -152,7 +152,7 @@ namespace RhodeIT.ViewModels
             {
 
                 // await test.LoginAsync(studentNo.Text, password.Text);
-                bool results = await rhodesDataBase.VerifyStudentAysnc(new LoginDetails { password = password.Text, userID = studentNo.Text.ToLower() });
+                Tuple<bool,LoginDetails> results = await rhodesDataBase.VerifyStudentAysnc(new LoginDetails { Password = password.Text, User_ID = studentNo.Text.ToLower() });
                 ///@dev 
 
                 /*
@@ -160,9 +160,9 @@ namespace RhodeIT.ViewModels
                  * contract if they are usually the student object has a field called 'loginhash' if this field is not null it means the student has logged into the platform before
                  * if its null we register the student on the platform
                  */
-                if (results)
+                if (results.Item1)
                 {
-                    SmartContract.RegisterStudent(studentNo.Text, password.Text);
+                    SmartContract.RegisterStudent(results.Item2);
                     Console.WriteLine("Login succesfull");
                     dialog.HideLoading();
                     Application.Current.MainPage = new NavigationPage(new MainMenuTab());

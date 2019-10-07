@@ -65,7 +65,7 @@ namespace RhodeIT.ViewModels
         {
             PurchaseRideCreditsViewModel = new PurchaseRideCreditsViewModel();
             RhodeITDB db = new RhodeITDB();
-            userID = db.hasLoggedInBefore().userID;
+            userID = db.hasLoggedInBefore().User_ID;
             Main = new StackLayout
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,

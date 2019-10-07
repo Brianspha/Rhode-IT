@@ -7,8 +7,9 @@ namespace RhodeIT.Models
 {
  public   class LoginDetails:RealmObject
 {
-      public string userID { get; set; }
-        public string password { get; set; }
-        public string TransactionHash { get; internal set; }
+      public string User_ID { get; set; }
+        public string Password { get; set; }
+        public string TransactionHash { get;  set; }
+        public string Ethereum_Address { get; set; }
     }
 }
