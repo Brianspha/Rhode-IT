@@ -42,7 +42,7 @@ namespace RhodeIT.ViewModels
         private void SetUp()
         {
             Rides = new ObservableCollection<Ride>();
-            for(int i=0; i < 5; i++)
+            for(int i=0; i < 0; i++)
             {
                 Rides.Add(new Ride { ID = i.ToString(), Docked = true, TransactionReciept = "0x6686491f125ab926f51b1ddf3b8ac370c902cb637a3fb6af2a9ef1b59df07a1a", Duration = i * 10000, StationName = "Hamilton" });
             }

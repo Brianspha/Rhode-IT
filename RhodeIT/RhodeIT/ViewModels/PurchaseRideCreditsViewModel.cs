@@ -1,4 +1,9 @@
-﻿using Syncfusion.XForms.PopupLayout;
+﻿using Acr.UserDialogs;
+using RhodeIT.Classes;
+using RhodeIT.Databases;
+using RhodeIT.Models;
+using RhodeIT.Services.RhodeIT;
+using Syncfusion.XForms.PopupLayout;
 using Syncfusion.XForms.TextInputLayout;
 using System;
 using Xamarin.Forms;
@@ -10,9 +15,13 @@ namespace RhodeIT.ViewModels
 
         public SfPopupLayout PopupLayout;
         private DataTemplate PopUpContents;
-
-        public PurchaseRideCreditsViewModel()
+        private Entry amount;
+        private LoginDetails Details;
+        private RhodeITDB db;
+        RhodesDataBase RhodesDataBase;
+        public PurchaseRideCreditsViewModel(LoginDetails details)
         {
+            Details = details;
             SetUp();
         }
 
@@ -29,7 +38,7 @@ namespace RhodeIT.ViewModels
                     ContainerType = ContainerType.Outlined,
                     OutlineCornerRadius = 8
                 };
-                Entry amount = new Entry();
+                amount = new Entry();
                 rideCreditsInputLayout.InputView = amount;
                 rideCreditsInputLayout.ErrorText = "Field cant be left blank";
                 rideCreditsInputLayout.FocusedColor = Color.Black;
@@ -37,6 +46,7 @@ namespace RhodeIT.ViewModels
 
             });
             PopupLayout = new SfPopupLayout();
+            PopupLayout.PopupView.HeaderTitle = "Puchase Ride Credits";
             PopupLayout.PopupView.ContentTemplate = PopUpContents;
             PopupLayout.PopupView.AnimationMode = AnimationMode.Fade;
             PopupLayout.PopupView.AppearanceMode = AppearanceMode.TwoButton;
@@ -44,13 +54,55 @@ namespace RhodeIT.ViewModels
             PopupLayout.PopupView.VerticalOptions = LayoutOptions.Center;
             PopupLayout.Closed += PopupLayout_Closed;
             PopupLayout.Opened += PopupLayout_Opened;
+            PopupLayout.PopupView.AcceptCommand = new Command(() => { Purchase_Ride_Credits(); });
+            db = new RhodeITDB();
+            RhodesDataBase = new RhodesDataBase();
+
         }
 
         public void PopupLayout_Opened(object sender, EventArgs e)
         {
             // PopupLayout.Show();
         }
-
+        public void Purchase_Ride_Credits()
+        {
+            RhodeITService rhodeITServices = new RhodeITService();
+            IUserDialogs dialog = UserDialogs.Instance;
+            try
+            {
+                bool result = int.TryParse(amount.Text, out int rideCredit);
+                if (!result)
+                {
+                    throw new InvalidNumberException("Invalid");
+                }
+                try
+                {
+                    if (rideCredit <= 0)
+                    {
+                        throw new InvalidNumberException("");
+                    }
+                    else
+                    {
+                        rhodeITServices.UpdateCreditRequestAsync(Details.Ethereum_Address, rideCredit).ConfigureAwait(false);
+                        Details.RideCredits += rideCredit;
+                        RhodesDataBase.ChargeUserRideCreditBalanceToAccount(Details).ConfigureAwait(false);
+                        db.UpdateLoginDetails(Details);
+                    }
+                }
+                catch (Exception e)
+                {
+                    PopupLayout.Dismiss();
+                    Console.WriteLine("Error whilst purcasing credits");
+                    dialog.Alert("Something went wrong whilst purchasing credit", "Insufficient Funds", "OK");
+                }
+            }
+            catch (InvalidNumberException e)
+            {
+                PopupLayout.Dismiss();
+                Console.WriteLine("Error whilst purcasing credits");
+                dialog.Alert("Please ensure you entered a valid number e.g. 12", "Invalid Number", "OK");
+            }
+        }
         private void PopupLayout_Closed(object sender, EventArgs e)
         {
 

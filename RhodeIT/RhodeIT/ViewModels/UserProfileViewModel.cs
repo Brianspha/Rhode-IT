@@ -1,9 +1,12 @@
 ﻿using ImageCircle.Forms.Plugin.Abstractions;
 using RhodeIT.Databases;
+using RhodeIT.Models;
+using RhodeIT.Services.RhodeIT;
 using Syncfusion.ListView.XForms;
 using Syncfusion.XForms.Buttons;
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using XamEffects;
 using XF.Material.Forms.UI;
@@ -12,7 +15,7 @@ namespace RhodeIT.ViewModels
 {
     public class UserProfileViewModel
     {
-        private string userID;
+        public LoginDetails details;
         private SfListView myRides;
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -63,9 +66,10 @@ namespace RhodeIT.ViewModels
         /// </summary>
         private void SetUp()
         {
-            PurchaseRideCreditsViewModel = new PurchaseRideCreditsViewModel();
             RhodeITDB db = new RhodeITDB();
-            userID = db.hasLoggedInBefore().User_ID;
+            details = new LoginDetails();
+            details = db.GetUserDetails();
+            PurchaseRideCreditsViewModel = new PurchaseRideCreditsViewModel(db.GetUserDetails());
             Main = new StackLayout
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
@@ -224,6 +228,7 @@ namespace RhodeIT.ViewModels
         /// <param name="topUpParent">The material card which is used to render the option of purchasing new ride credits</param>
         private static void CreateUserInformationUIElements(out MaterialCard userInfoParent, MaterialCard studentNumberCard, StackLayout topUpParent)
         {
+
             StackLayout userDetailsParent = new StackLayout
             {
                 VerticalOptions = LayoutOptions.StartAndExpand,
@@ -258,9 +263,15 @@ namespace RhodeIT.ViewModels
                 VerticalOptions = LayoutOptions.FillAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand
             };
+            LoginDetails details = new RhodeITDB().GetUserDetails();
+            int balance = details.RideCredits;
+            if (balance == 0)
+            {
+                balance = GetUserCreditBalanceAsync(details).Result;
+            }
             Label rideCredits = new Label
             {
-                Text = "20",
+                Text = balance.ToString(),
                 TextColor = Color.Black
             };
             rideCreditsParent.Children.Add(rideCreditsLabel);
@@ -294,7 +305,7 @@ namespace RhodeIT.ViewModels
             };
             Label studentNumber = new Label
             {
-                Text = userID,
+                Text = details.User_ID,
                 TextColor = Color.Black
             };
             SfButton TopUp = new SfButton
@@ -351,6 +362,12 @@ namespace RhodeIT.ViewModels
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        private static async Task<int> GetUserCreditBalanceAsync(LoginDetails details)
+        {
+            int balance = await new RhodeITService().GetUsercreditQueryAsync(details.Ethereum_Address).ConfigureAwait(false);
+            return balance;
         }
     }
 }

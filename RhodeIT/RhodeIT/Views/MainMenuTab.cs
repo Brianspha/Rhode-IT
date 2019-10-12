@@ -20,7 +20,7 @@ namespace RhodeIT.Views
         public MainMenuTab()
         {
             db = new RhodeITDB();
-            dets = db.hasLoggedInBefore();
+            dets = db.GetUserDetails();
             Title = "Welcome "+dets.User_ID;
             menuViewModel = new MainMenuTabsViewModel();
             ToolbarItem logOut = new ToolbarItem { Text = "Logout", Order = ToolbarItemOrder.Primary, Priority = 1 };
@@ -31,7 +31,7 @@ namespace RhodeIT.Views
         {
             Application.Current.MainPage = new LoginPage();
             RhodeITDB db = new RhodeITDB();
-            db.logOut();
+            db.LogOut();
         }
 
         public int CheckPlatform()

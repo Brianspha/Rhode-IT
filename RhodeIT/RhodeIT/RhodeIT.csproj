@@ -18,10 +18,12 @@
     <PackageReference Include="JsonRpcSharp" Version="0.9.54734" />
     <PackageReference Include="LiveXAML" Version="2.1.72" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="Microsoft.Net.Http" Version="2.2.29" />
     <PackageReference Include="Nethereum" Version="0.0.2.60" />
     <PackageReference Include="Nethereum.JsonRpc.RpcClient" Version="3.4.0" />
     <PackageReference Include="Nethereum.JsonRpc.WebSocketClient" Version="3.4.0" />
     <PackageReference Include="Nethereum.Quorum" Version="3.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Npgsql" Version="4.0.8" />
     <PackageReference Include="Prism.DryIoc.Forms" Version="7.2.0.1367" />
     <PackageReference Include="Quick.Xamarin.BLE" Version="1.0.4" />

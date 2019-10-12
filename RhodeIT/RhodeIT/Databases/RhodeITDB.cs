@@ -3,27 +3,25 @@ using Realms;
 using RhodeIT.Classes;
 using RhodeIT.Models;
 using RhodeIT.Services.RhodeIT;
-using RhodeIT.Views;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Xamarin.Forms.GoogleMaps;
 
 namespace RhodeIT.Databases
 {
     public class RhodeITDB
     {
-        #region Local database function
         private Realm db;
-        private RhodeITSmartContract RhodeITSmartContract;
-        RhodeITService RhodeITService;
+        private readonly RhodeITSmartContract RhodeITSmartContract;
+        private readonly RhodeITService RhodeITService;
         /// <summary>
         /// Initializes a new instance of the <see cref="T:RealmDataBase"/> class.
         /// </summary>
         public RhodeITDB()
+        {
+        }
+
+        private void SetUpDB()
         {
             try
             {
@@ -44,12 +42,14 @@ namespace RhodeIT.Databases
             {
             }
         }
+
         /// <summary>
         /// @dev Checks if the App has been launched before .
         /// </summary>
         /// <returns><c>true</c>, if run was firsted, <c>false</c> otherwise.</returns>
         public bool FirstRun()
         {
+            SetUpDB();
             List<DockingStaion> temp = db.All<DockingStaion>().ToList();
             return temp.Count == 0 ? true : false;
         }
@@ -59,18 +59,22 @@ namespace RhodeIT.Databases
         /// <returns>bool </returns>
         public bool FirstRunAdmin()
         {
+            SetUpDB();
             List<VenueLocation> temp = db.All<VenueLocation>().ToList();
             return temp.Count == 0 ? true : false;
         }
 
         /// <summary>
-        /// @Dev saves user logins to 
+        /// Updates the users login details
         /// </summary>
         /// <param name="dets">login credentials of user</param>
-        public void Login(LoginDetails dets)
+        public void UpdateLoginDetails(LoginDetails dets)
         {
+            SetUpDB();
             CrossSecureStorage.Current.SetValue("Password", dets.Password);
             CrossSecureStorage.Current.SetValue("ID", dets.User_ID);
+            CrossSecureStorage.Current.SetValue("Credit", dets.RideCredits.ToString());
+            CrossSecureStorage.Current.SetValue("Address", dets.Ethereum_Address);
             db.Write(() =>
             {
                 dets.Password = "";//@dev we dont store password in realm db since we keeping that in securestorage
@@ -82,12 +86,13 @@ namespace RhodeIT.Databases
         /// @dev checks to see if the user had logged in before if yes we return they credientials
         /// </summary>
         /// <returns>user logins</returns>
-        public LoginDetails hasLoggedInBefore()
+        public LoginDetails GetUserDetails()
         {
+            SetUpDB();
             LoginDetails temp = new LoginDetails();
             try
             {
-                temp = new LoginDetails { User_ID = CrossSecureStorage.Current.GetValue("ID"), Password = CrossSecureStorage.Current.GetValue("Password") };
+                temp = new LoginDetails { User_ID = CrossSecureStorage.Current.GetValue("ID"), Password = CrossSecureStorage.Current.GetValue("Password"), Ethereum_Address = CrossSecureStorage.Current.GetValue("Address"), RideCredits = Convert.ToInt32(CrossSecureStorage.Current.GetValue("Credit")) };
             }
             catch
             {
@@ -102,67 +107,12 @@ namespace RhodeIT.Databases
         /// <summary>
         /// @Dev deletes user login credentials everytime they loggout
         /// </summary>
-        public void logOut()
+        public void LogOut()
         {
+            SetUpDB();
             CrossSecureStorage.Current.DeleteKey("Password");
             CrossSecureStorage.Current.DeleteKey("ID");
             Console.WriteLine("Logging out");
-
-        }
-        /// <summary>
-        /// @
-        /// </summary>
-        /// <param name="config"></param>
-        public void saveIPConfig(IPConfig config)
-        {
-            db.Write(() =>
-            {
-                db.Add(config);
-            });
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public IPConfig getCurrentDockingStationIP()
-        {
-            List<IPConfig> IP = db.All<IPConfig>().ToList<IPConfig>();
-            return IP.ElementAt(0);
-        }
-
-        /// <summary>
-        /// @dev fetches all avaiable bicycles using the passed in venue name
-        /// </summary>
-        /// <param name="dockingStationName"></param>
-        /// <returns>ObservableCollection<Bicycle></returns>
-        public ObservableCollection<Bicycle> getAvailableBicycles(string dockingStationName)
-        {
-            ObservableCollection<Bicycle> temp = new ObservableCollection<Bicycle>();
-            ///@dev fetch biycles from 
-
-
-
-            return temp;
-        }
-
-        /// <summary>
-        /// @dev looks for venue using name returns the Latitude and Longitude position of venue 
-        /// </summary>
-        /// <param name="name">Name of the venue we look for</param>
-        /// <returns></returns>
-        public Position getDockingStationLatLong(string name)
-        {
-            IQueryable<VenueLocation> venue = db.All<VenueLocation>().Where(v => v.Name == name);
-            return new Position(venue.ToList()[0].Latitude, venue.ToList()[0].Longitude);
-        }
-        /// <summary>
-        /// @dev returns the number of available bicycles in a given Docking station
-        /// </summary>
-        /// <param name="venueName"></param>
-        /// <returns>number of available bicycles</returns>
-        public int getAvailableBicyclesCount(string venueName)
-        {
-            return db.All<DockingStaion>().Where(station => station.DockingStationInformation.Name == venueName).ToList().Count;
 
         }
 
@@ -170,8 +120,9 @@ namespace RhodeIT.Databases
         /// @dev stores all venues passed into the function
         /// </summary>
         /// <param name="locations"> names of the docking stations</param>
-        public void storeVenueLocations(List<VenueLocation> locations)
+        public void StoreVenueLocations(List<VenueLocation> locations)
         {
+            SetUpDB();
             if (db.All<VenueLocation>().ToList().Count > 0)
             {
                 return;
@@ -185,77 +136,19 @@ namespace RhodeIT.Databases
             });
         }
 
-        /// <summary>
-        /// @dev stores all venues based on the given names as Docking stations
-        /// </summary>
-        /// <param name="names"> names of the docking stations</param>
-        /// <returns>list of dockign stations</returns>
-        public void storeDockingStations(string[] names)
+        public void StoreTransactionReceipt(TransactionReciept reciept)
         {
-            List<VenueLocation> ven = new List<VenueLocation>();
-            if (names.Length > 0)
+            SetUpDB();
+            db.Write(() =>
             {
-                List<VenueLocation> test = db.All<VenueLocation>().ToList();
-                foreach (string name in names)
-                {
-                    IQueryable<VenueLocation> venue = db.All<VenueLocation>().Where(v => v.Name.Contains(name));
-                    if (venue.ToList().Count > 0)
-                    {
-                        List<DockingStations> dockingStations = db.All<DockingStations>().ToList();
-                        if (dockingStations.Count == 0)
-                        {
-                            DockingStations stations = new DockingStations();
-                            stations.RegisteredDockingStaions.Add(new DockingStaion { DockingStationInformation = venue.ToList()[0] });
-                            db.Write(() =>
-                            {
-                                db.Add(stations);
-                            });
-                            //@dev 
-                            ven.Add(venue.ToList()[0]);
-                        }
-                        else
-                        {
-                            DockingStaion exists = dockingStations.ToList()[0].RegisteredDockingStaions.ToList().Find(station => station.DockingStationInformation.Name.Contains(name));
-                            if (exists == null)
-                            {
-                                db.Write(() =>
-                                {
-                                    dockingStations.ToList()[0].RegisteredDockingStaions.Add(new DockingStaion { DockingStationInformation = venue.ToList()[0] });
-                                    db.Add(dockingStations[0], true);
-                                });
-                                ven.Add(venue.ToList()[0]);
-                            }
-                        }
-                    }
-                }
-            }
+                db.Add(reciept, true);
+            });
         }
 
-        /// <summary>
-        /// @dev gets all registerd docking stations on platform
-        /// </summary>
-        /// <returns> all docking stations on platform</returns>
-        public List<Pin> getAllDockingStations()
+        public List<TransactionReciept> GetTransactionReceipts()
         {
-            List<Pin> stationPins = new List<Pin>();
-            DockingStations stations = db.All<DockingStations>().ToList()[0];
-            string[] files = new string[] { "Icon1.png" };
-            if (stations != null)
-            {
-                foreach (DockingStaion station in stations.RegisteredDockingStaions)
-                {
-                    Pin tempPin = new Pin() { Position = new Position(station.DockingStationInformation.Latitude, station.DockingStationInformation.Longitude), Label = station.DockingStationInformation.Name, Address = "Available Bicycles: " + station.AvailableBicycles.Count.ToString() };
-                    Assembly assembly = typeof(MapsTab).GetTypeInfo().Assembly;
-                    string file = files[0];
-                    string[] names = assembly.GetManifestResourceNames();
-                    tempPin.Icon = BitmapDescriptorFactory.FromBundle(file);
-                    stationPins.Add(tempPin);
-                }
-            }
-            return stationPins;
+            SetUpDB();
+            return db.All<TransactionReciept>().ToList();
         }
-        #endregion
-        #region Communicate with Blockchain Functions
-        #endregion
     }
 }

@@ -54,7 +54,7 @@ namespace RhodeIT.Helpers
                 }
             }
 
-            db.storeVenueLocations(VenueList);
+            db.StoreVenueLocations(VenueList);
         }
 
 

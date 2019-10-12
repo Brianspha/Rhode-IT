@@ -21,7 +21,7 @@ namespace RhodeIT
             XF.Material.Forms.Material.Init(this);
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Variables.SyncFusionLicense);
             db = new RhodeITDB();
-            LoginDetails dets = db.hasLoggedInBefore();
+            LoginDetails dets = db.GetUserDetails();
             if (!string.IsNullOrEmpty(dets.User_ID))
             {
                 Current.MainPage = new NavigationPage(new MainMenuTab());

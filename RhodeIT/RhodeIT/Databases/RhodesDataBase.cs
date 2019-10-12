@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Npgsql;
+﻿using Npgsql;
 using RhodeIT.Classes;
 using RhodeIT.Helpers;
 using RhodeIT.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RhodeIT.Databases
 {
@@ -46,9 +45,9 @@ namespace RhodeIT.Databases
                 NpgsqlCommand command = new NpgsqlCommand("select * from student_staff where student_staff_id=" + "'" + details.User_ID + "'" + ";", connection);
                 NpgsqlDataReader dataReader = command.ExecuteReader();
                 dataReader.Read();
-                var user_id = dataReader[2].ToString();
-                var password = dataReader[1].ToString();
-                var eth_address = dataReader[3].ToString();
+                string user_id = dataReader[2].ToString();
+                string password = dataReader[1].ToString();
+                string eth_address = dataReader[3].ToString();
                 details.Ethereum_Address = eth_address;
                 found = user_id == details.User_ID && password == details.Password;
                 if (!found)
@@ -59,7 +58,7 @@ namespace RhodeIT.Databases
                 command.Dispose();
                 dataReader.Close();
             }
-            return await Task.FromResult(new Tuple<bool,LoginDetails>(found,details));
+            return await Task.FromResult(new Tuple<bool, LoginDetails>(found, details));
         }
         public async Task<string> GetUserEthAddress(string user_id)
         {
@@ -73,6 +72,20 @@ namespace RhodeIT.Databases
                 eth_address = dataReader[3].ToString();
             }
             return await Task.FromResult(eth_address);
+        }
+
+        public async Task<bool> ChargeUserRideCreditBalanceToAccount(LoginDetails details)
+        {
+            bool charged = false;
+            using (NpgsqlConnection connection = new NpgsqlConnection(Variables.connectionStringRhodesDB))
+            {
+                connection.Open();
+                NpgsqlCommand command = new NpgsqlCommand("UPDATE student_staff SET ride_credit= '" + details.RideCredits.ToString() + "' where student_staff_id=" + "'" + details.User_ID + "'" + ";", connection);
+                NpgsqlDataReader dataReader = command.ExecuteReader();
+                dataReader.Read();
+                charged = !charged;
+            }
+            return await Task.FromResult(charged);
         }
     }
 }

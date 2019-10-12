@@ -39,7 +39,7 @@ namespace RhodeIT.Classes
             BaseContract = new RhodeITDeployment();
             rhodeITDB = new RhodeITDB();
             rhodesDataBase = new RhodesDataBase();
-            Account = new ManagedAccount(Variables.senderAddress, Variables.Passwordd);
+            Account = new ManagedAccount(Variables.adminAddress, Variables.Passwordd);
             web3 = new Web3Quorum(Variables.RPCAddressNodeGenesis);
             web3.TransactionManager.DefaultGas = new System.Numerics.BigInteger(8000000);
             web3.TransactionManager.DefaultGasPrice = new System.Numerics.BigInteger(20000000000);
@@ -55,10 +55,10 @@ namespace RhodeIT.Classes
         {
             details.User_ID = details.User_ID.ToLower();
             string Thash = "";
-            Tuple<bool, string> results = await SmartContractFunctions.AddUserRequestAsync(details.User_ID,details.Ethereum_Address);
+            Tuple<bool, string> results = await SmartContractFunctions.AddUserRequestAsync(details);
             Thash = results.Item2;
             details.TransactionHash = Thash;
-            rhodeITDB.Login(details);
+            rhodeITDB.UpdateLoginDetails(details);
         }
 
     }

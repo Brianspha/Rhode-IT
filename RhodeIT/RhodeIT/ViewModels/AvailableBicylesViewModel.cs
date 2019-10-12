@@ -76,7 +76,7 @@ namespace RhodeIT.ViewModels
             Close = closeMenu;
             db = new RhodeITService();
             ShowMenu = show;
-            SetUp();
+            SetUpAsync();
         }
         /// <summary>
         /// Sets up the view for the pull up menu when a particular docking is clicked on the map
@@ -84,9 +84,9 @@ namespace RhodeIT.ViewModels
         ///Each item within the Listview is templated in a Material Card View
         ///The Material CardView is wrapped in a Frame the material card view doesnt render elements well using a Frame fixes this issue
         /// </summary>
-        private void SetUp()
+        private async void SetUpAsync()
         {
-            ObservableCollection<Bicycle> bikes = db.GetAvailableBicyclesFromDockingStation(Name);
+            ObservableCollection<Bicycle> bikes = await db.GetAvailableBicyclesFromDockingStationAsync(Name).ConfigureAwait(false);
             listView = new SfListView
             {
                 ItemSize = 120,

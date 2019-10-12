@@ -1,22 +1,15 @@
-﻿using Newtonsoft.Json;
-using Realms;
+﻿using Realms;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace RhodeIT.Models
 {
-    [JsonObject(MemberSerialization.OptIn)] // Only properties marked [JsonProperty] will be serialized
     public class Bicycle : RealmObject, INotifyPropertyChanged
     {
-        [JsonProperty]
-        [Indexed]
-        public int ID { get; set; }
-        [JsonProperty]
-        public string BikeName { get; set; }
-        public string Model { get; set; }
-        [JsonProperty]
+        public string ID { get; set; }
+        public string DockdeAt { get; set; }
         public bool Status { get; set; }
-        [JsonProperty]
+        public string renter { get; set; }
         public IList<Student> UserHistory { get; }
     }
 }

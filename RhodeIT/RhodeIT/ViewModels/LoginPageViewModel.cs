@@ -109,9 +109,6 @@ namespace RhodeIT.ViewModels
                 Text = "Login",
                 TextColor = Color.Black
             };
-            //Assembly assembly = typeof(LoginPage).GetTypeInfo().Assembly;
-            //string file = Icons[0];
-            //string[] names = assembly.GetManifestResourceNames();
             LoginPageIcon = new CircleImage
             {
                 HeightRequest = 100,

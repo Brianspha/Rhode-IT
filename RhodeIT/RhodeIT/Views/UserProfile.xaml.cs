@@ -23,7 +23,7 @@ namespace RhodeIT.Views
         {
             Application.Current.MainPage = new LoginPage();
             RhodeITDB db = new RhodeITDB();
-            db.logOut();
+            db.LogOut();
         }
         public int CheckPlatform()
         {
