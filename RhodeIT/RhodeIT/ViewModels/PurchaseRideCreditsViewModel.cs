@@ -18,10 +18,9 @@ namespace RhodeIT.ViewModels
         private Entry amount;
         private LoginDetails Details;
         private RhodeITDB db;
-        RhodesDataBase RhodesDataBase;
-        public PurchaseRideCreditsViewModel(LoginDetails details)
+        private RhodesDataBase RhodesDataBase;
+        public PurchaseRideCreditsViewModel()
         {
-            Details = details;
             SetUp();
         }
 
@@ -83,23 +82,25 @@ namespace RhodeIT.ViewModels
                     }
                     else
                     {
+                        Details = db.GetUserDetails();
                         rhodeITServices.UpdateCreditRequestAsync(Details.Ethereum_Address, rideCredit).ConfigureAwait(false);
                         Details.RideCredits += rideCredit;
                         RhodesDataBase.ChargeUserRideCreditBalanceToAccount(Details).ConfigureAwait(false);
                         db.UpdateLoginDetails(Details);
+                        dialog.Alert(string.Format("Succesfully recharged ride credits with {0}", rideCredit), "Success", "OK");
                     }
                 }
                 catch (Exception e)
                 {
                     PopupLayout.Dismiss();
-                    Console.WriteLine("Error whilst purcasing credits");
+                    Console.WriteLine("Error whilst purcasing credits: " + e.Message);
                     dialog.Alert("Something went wrong whilst purchasing credit", "Insufficient Funds", "OK");
                 }
             }
             catch (InvalidNumberException e)
             {
                 PopupLayout.Dismiss();
-                Console.WriteLine("Error whilst purcasing credits");
+                Console.WriteLine("Error whilst purcasing credits: " + e.Message);
                 dialog.Alert("Please ensure you entered a valid number e.g. 12", "Invalid Number", "OK");
             }
         }

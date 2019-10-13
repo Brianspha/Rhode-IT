@@ -43,7 +43,7 @@ namespace RhodeIT.Services.RhodeIT
             {
                 FromAddress = details.Ethereum_Address,
                 Gas = Variables.gas,
-                GasPrice = Variables.gasPrice,
+                // GasPrice = Variables.gasPrice,
                 Studentno_staff_no = details.User_ID
             };
             string receipt = "";
@@ -66,7 +66,7 @@ namespace RhodeIT.Services.RhodeIT
             {
                 FromAddress = address,
                 Gas = Variables.gas,
-                GasPrice = Variables.gasPrice
+                //  GasPrice = Variables.gasPrice
             };
             bool results = await ContractHandler.QueryAsync<UserExistsFunction, bool>(userExistsFunction, null).ConfigureAwait(false);
             return results;
@@ -77,7 +77,7 @@ namespace RhodeIT.Services.RhodeIT
             {
                 FromAddress = address,
                 Gas = Variables.gas,
-                GasPrice = Variables.gasPrice
+                ///    GasPrice = Variables.gasPrice
             };
             int balance = 0;
             try
@@ -92,30 +92,42 @@ namespace RhodeIT.Services.RhodeIT
         }
         public async Task<string> UpdateCreditRequestAsync(string address, int amount)
         {
+            //@dev only admin is allowed to approve the purchasing of ride credits
             UpdateCreditFunction updateCreditFunction = new UpdateCreditFunction
             {
-                FromAddress = Variables.adminAddress,//@dev only admin is allowed to approve the purchasing of ride cre
+                FromAddress = Variables.adminAddress,
                 Gas = Variables.gas,
-                GasPrice = Variables.gasPrice,
-                AmountToSend = Convert.ToInt32(amount * Math.Pow(10, 18))
+                AmountToSend = amount,
+                Receipient=address
+                
             };
             string receipt = await ContractHandler.SendRequestAsync(updateCreditFunction).ConfigureAwait(false);
             db.StoreTransactionReceipt(new TransactionReciept { Receipt = receipt, Activity = "Purchased Ride Credits" });
             return receipt;
         }
-        public async Task<bool> RentBicycleRequestAndWaitForReceiptAsync(BicycleRental rental)
+        public async Task<bool> RentBicycleRequestAndWaitForReceiptAsync(Bicycle rental)
         {
+            bool rentalResults = false;
             RentBicycleFunction rentBicycleFunction = new RentBicycleFunction
             {
-                BicycleId = rental.BicycleID,
-                DockingStation = rental.DockingStation,
-                FromAddress = rental.Ethereum_Address,
+                BicycleId = rental.ID,
+                DockingStation = rental.DockdeAt,
+                FromAddress = rental.renter,
                 Gas = Variables.gas,
-                GasPrice = Variables.gasPrice,
+                ///      GasPrice = Variables.gasPrice,
+                ///   
             };
-            TransactionReceipt transactionReceipt = await ContractHandler.SendRequestAndWaitForReceiptAsync(rentBicycleFunction, null).ConfigureAwait(false);
-            db.StoreTransactionReceipt(new TransactionReciept { Receipt = transactionReceipt.TransactionHash, Activity = "Rented out bicycle" });
-            bool rentalResults = await UnlockBicycle(new Bicycle { DockdeAt = rental.DockingStation, renter = rental.Ethereum_Address, ID = rental.BicycleID }).ConfigureAwait(false);
+            try
+            {
+                TransactionReceipt transactionReceipt = await ContractHandler.SendRequestAndWaitForReceiptAsync(rentBicycleFunction, null).ConfigureAwait(false);
+                db.StoreTransactionReceipt(new TransactionReciept { Receipt = transactionReceipt.TransactionHash, Activity = "Rented out bicycle" });
+                rentalResults = await UnlockBicycleAsync(rental).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Something went wrong bicycle rental: " + e.Message);
+                return rentalResults;
+            }
             return rentalResults;
         }
         public async Task<ObservableCollection<DockingStaion>> GetDockingStations()
@@ -124,7 +136,6 @@ namespace RhodeIT.Services.RhodeIT
             List<string> keys = await GetRegisteredDockingStationKeysQueryAsync().ConfigureAwait(false);
             foreach (string key in keys)
             {
-
                 GetDockingStationOutputDTO dockingStationDetails = await GetDockingStationQueryAsync(key).ConfigureAwait(false);
                 DockingStaion dockingStation = new DockingStaion { DockingStationInformation = new VenueLocation { Name = dockingStationDetails.Name, Latitude = double.Parse(dockingStationDetails.Latitude, System.Globalization.CultureInfo.InvariantCulture), Longitude = double.Parse(dockingStationDetails.Longitude, System.Globalization.CultureInfo.InvariantCulture) } };
                 temp.Add(dockingStation);
@@ -139,8 +150,7 @@ namespace RhodeIT.Services.RhodeIT
             {
                 StationName = stationName,
                 FromAddress = details.Ethereum_Address,
-                Gas = Variables.gas,
-                GasPrice = Variables.gasPrice
+                Gas = Variables.gas
             };
             GetDockingStationOutputDTO stationDetails = await ContractHandler.QueryDeserializingToObjectAsync<GetDockingStationFunction, GetDockingStationOutputDTO>(getDockingStationFunction).ConfigureAwait(false);
             return stationDetails;
@@ -151,8 +161,7 @@ namespace RhodeIT.Services.RhodeIT
             GetRegisteredDockingStationKeysFunction getRegisteredDockingStationKeysFunction = new GetRegisteredDockingStationKeysFunction
             {
                 FromAddress = details.Ethereum_Address,
-                Gas = Variables.gas,
-                GasPrice = Variables.gasPrice,
+                Gas = Variables.gas
             };
             List<string> keys = await ContractHandler.QueryAsync<GetRegisteredDockingStationKeysFunction, List<string>>(getRegisteredDockingStationKeysFunction, null).ConfigureAwait(false);
             return keys;
@@ -164,7 +173,6 @@ namespace RhodeIT.Services.RhodeIT
             GetDockingStationFunction getDockingStationFunction = new GetDockingStationFunction
             {
                 Gas = Variables.gas,
-                GasPrice = Variables.gasPrice,
                 FromAddress = details.Ethereum_Address
             };
             GetDockingStationOutputDTO stationDetails = await ContractHandler.QueryDeserializingToObjectAsync<GetDockingStationFunction, GetDockingStationOutputDTO>(getDockingStationFunction, null).ConfigureAwait(false);
@@ -186,7 +194,8 @@ namespace RhodeIT.Services.RhodeIT
             GetBicycleFunction bicycleFunction = new GetBicycleFunction
             {
                 FromAddress = Variables.adminAddress,
-                Gas = Variables.gas
+                Gas = Variables.gas,
+                BicycleId = bikeId
             };
             GetBicycleOutputDTO details = await ContractHandler.QueryDeserializingToObjectAsync<GetBicycleFunction, GetBicycleOutputDTO>(bicycleFunction, null).ConfigureAwait(false);
             return details;
@@ -198,11 +207,14 @@ namespace RhodeIT.Services.RhodeIT
             foreach (string key in keys)
             {
                 GetBicycleOutputDTO bicycleDetails = await GetBicycleInformation(key).ConfigureAwait(false);
-                bicycles.Add(new Bicycle { ID = key, Status = bicycleDetails.ReturnValue2, DockdeAt = bicycleDetails.ReturnValue1 });
+                if (bicycleDetails.ReturnValue2)
+                {
+                    bicycles.Add(new Bicycle { ID = key, Status = bicycleDetails.ReturnValue2 ==true? "Available":"Not Available", DockdeAt = bicycleDetails.ReturnValue1 });
+                }
             }
             return bicycles;
         }
-        public Task<bool> UnlockBicycle(Bicycle bicycle)
+        public async Task<bool> UnlockBicycleAsync(Bicycle bicycle)
         {
             bool success = false;
             string sUrl = Variables.rentBicycle;
@@ -216,18 +228,13 @@ namespace RhodeIT.Services.RhodeIT
             };
 
             HttpClient oHttpClient = new HttpClient();
-            Task<HttpResponseMessage> oTaskPostAsync = oHttpClient.PutAsync(sUrl, new StringContent(rental.ToString(), Encoding.UTF8, sContentType));
-            oTaskPostAsync.ContinueWith((oHttpResponseMessage) =>
+            HttpResponseMessage results = await oHttpClient.PutAsync(sUrl, new StringContent(rental.ToString(), Encoding.UTF8, sContentType)).ConfigureAwait(false);
+            if (results.StatusCode != HttpStatusCode.NotFound)
             {
-                HttpResponseMessage results = oHttpResponseMessage.Result;
-                if (results.StatusCode != HttpStatusCode.NotFound)
-                {
-                    success = true;
-                    ///HttpContentHeaders response = results.Content.Headers;
-                }
-
-            });
-            return Task.FromResult(success);
+                success = true;
+                ///HttpContentHeaders response = results.Content.Headers;
+            }
+            return success;
         }
         public Task<bool> DockBicycle(Bicycle bicycle)
         {

@@ -20,13 +20,11 @@ namespace RhodeIT.ViewModels
         private RhodeITService RhodeITServices;
         private bool visibleYet;
         public event PropertyChangedEventHandler PropertyChanged;
-
         private readonly Position startPos = new Position(-33.311836d, 26.520642d);
         private StackLayout main;
         private SlideMenuView SlideUp;
         private readonly Command ShowMenu;
         private readonly string[] files = new string[] { "Icon1.png" };
-
         private ObservableCollection<DockingStaion> dockingStaions;
         public ObservableCollection<DockingStaion> DockingStaions
         {
@@ -66,8 +64,6 @@ namespace RhodeIT.ViewModels
                 }
             }
         }
-
-
         public RhodesMap CustomMap
         {
             get => customMap;
@@ -93,8 +89,6 @@ namespace RhodeIT.ViewModels
                 }
             }
         }
-
-
 
         public MapsTabViewModel(SlideMenuView slideMenu, Command show)
         {
@@ -126,8 +120,7 @@ namespace RhodeIT.ViewModels
                 HorizontalOptions = LayoutOptions.CenterAndExpand
             };
         }
-
-
+    
 
         public void CreatePins()
         {
@@ -142,6 +135,9 @@ namespace RhodeIT.ViewModels
                 Pins.Add(tempPin);
             }
         }
+
+
+
         private void CustomMap_PinClicked(object sender, PinClickedEventArgs e)
         {
             //@dev get pin details

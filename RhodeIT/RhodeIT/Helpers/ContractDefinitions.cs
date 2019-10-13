@@ -123,7 +123,8 @@ namespace RhodeIT.Services.RhodeIT.ContractDefinition
     [Function("updateCredit", "bool")]
     public class UpdateCreditFunctionBase : FunctionMessage
     {
-
+        [Parameter("address", "receipient", 1)]
+        public virtual string Receipient { get; set; }
     }
 
     public partial class GetUsercreditFunction : GetUsercreditFunctionBase { }

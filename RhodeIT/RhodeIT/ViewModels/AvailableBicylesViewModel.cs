@@ -1,9 +1,12 @@
-﻿using RhodeIT.Models;
+﻿using Acr.UserDialogs;
+using RhodeIT.Databases;
+using RhodeIT.Models;
 using RhodeIT.Services.RhodeIT;
 using Syncfusion.ListView.XForms;
-using Syncfusion.XForms.Buttons;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Xamarin.Forms;
 using XF.Material.Forms.UI;
@@ -14,8 +17,7 @@ namespace RhodeIT.ViewModels
     public class AvailableBicylesViewModel : INotifyPropertyChanged
     {
         private SfListView listView;
-        private readonly StackLayout mapsTab;
-        private RhodeITService db;
+        private RhodeITService SmartContract;
         public event PropertyChangedEventHandler PropertyChanged;
 
         private StackLayout listViewParent;
@@ -60,6 +62,20 @@ namespace RhodeIT.ViewModels
                 }
             }
         }
+
+        private ObservableCollection<Bicycle> bikes;
+        public ObservableCollection<Bicycle> Bikes
+        {
+            get => bikes;
+            set
+            {
+                if (value != bikes)
+                {
+                    bikes = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Bikes)));
+                }
+            }
+        }
         /// <summary>
         /// Constructor
         /// </summary>
@@ -74,9 +90,9 @@ namespace RhodeIT.ViewModels
             Name = venue;
             ListViewParent = listView;
             Close = closeMenu;
-            db = new RhodeITService();
+            SmartContract = new RhodeITService();
             ShowMenu = show;
-            SetUpAsync();
+            SetUp();
         }
         /// <summary>
         /// Sets up the view for the pull up menu when a particular docking is clicked on the map
@@ -84,16 +100,17 @@ namespace RhodeIT.ViewModels
         ///Each item within the Listview is templated in a Material Card View
         ///The Material CardView is wrapped in a Frame the material card view doesnt render elements well using a Frame fixes this issue
         /// </summary>
-        private async void SetUpAsync()
+        private void SetUp()
         {
-            ObservableCollection<Bicycle> bikes = await db.GetAvailableBicyclesFromDockingStationAsync(Name).ConfigureAwait(false);
+            UpdateBicycleListAsync();
             listView = new SfListView
             {
                 ItemSize = 120,
-                ItemsSource = new RidesViewModel().Rides,
+                ItemsSource = bikes,
                 LayoutManager = new LinearLayout(),
-                ItemTemplate = CreateUpcomingRidesDataTemplate()
+                ItemTemplate = AvailablesBicyclesDataTemplate()
             };
+            listView.ItemTapped += ListView_ItemTapped;
             ListViewParent.Children.Add(listView);
         }
         /// <summary>
@@ -101,34 +118,14 @@ namespace RhodeIT.ViewModels
         /// Listview
         /// </summary>
         /// <returns>DataTemplate</returns>
-        private static DataTemplate CreateUpcomingRidesDataTemplate()
+        private static DataTemplate AvailablesBicyclesDataTemplate()
         {
             return new DataTemplate(() =>
             {
                 Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15 };
                 Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID" };
                 bikeID.SetBinding(Label.TextProperty, new Binding("ID"));
-                SfButton rentOut = new SfButton
-                {
-                    Text = "RentOut",
-                    BackgroundColor = Color.White,
-                    TextColor = Color.Black,
-                    CornerRadius = 20,
-                    BorderColor = Color.Black,
-                    BorderWidth = 1
-                };
                 StackLayout bikeIDParent = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.FillAndExpand,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    Orientation = StackOrientation.Horizontal,
-                    Padding = 0,
-                    HeightRequest = 30,
-                    Children = {
-                            bikeIDLabel,bikeID
-                        }
-                };
-                StackLayout rentOutButtonParent = new StackLayout
                 {
                     VerticalOptions = LayoutOptions.FillAndExpand,
                     HorizontalOptions = LayoutOptions.CenterAndExpand,
@@ -136,23 +133,15 @@ namespace RhodeIT.ViewModels
                     Padding = 0,
                     HeightRequest = 30,
                     Children = {
-                            rentOut
+                            bikeIDLabel,bikeID
                         }
                 };
                 MaterialCard parentInforCard = new MaterialCard
                 {
                     Elevation = 5,
-                    BackgroundColor = Color.White
+                    BackgroundColor = Color.White,
+                    Content = bikeIDParent
                 };
-                StackLayout parentInfo = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.FillAndExpand,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    Padding = 0
-                };
-                parentInfo.Children.Add(bikeIDParent);
-                parentInfo.Children.Add(rentOutButtonParent);
-                parentInforCard.Content = parentInfo;
                 Frame cardFrame = new Frame
                 {
                     WidthRequest = 120,
@@ -164,6 +153,35 @@ namespace RhodeIT.ViewModels
                 };
                 return cardFrame;
             });
+        }
+
+        private void ListView_ItemTapped(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
+        {
+            Bicycle bicycle = e.ItemData as Bicycle;
+            string ethAddress = new RhodeITDB().GetUserDetails().Ethereum_Address;
+            bicycle.renter = ethAddress;
+            IUserDialogs dialog = UserDialogs.Instance;
+            dialog.ShowLoading("Renting Out bicycle...");
+            ConfiguredTaskAwaitable<bool> success = SmartContract.RentBicycleRequestAndWaitForReceiptAsync(bicycle).ConfigureAwait(false);
+            if (success.GetAwaiter().GetResult())
+            {
+                dialog.HideLoading();
+                dialog.Toast("Success!!");
+                dialog.Alert("Successfully rented out bicycle", "Success", "OK");
+                UpdateBicycleListAsync();
+            }
+            else
+            {
+                dialog.HideLoading();
+                dialog.Toast("Error!!");
+                dialog.Alert("Something went wrong whilst processing bicycle please ensure you have enough ride credits", "Error", "OK");
+            }
+
+        }
+
+        private async void UpdateBicycleListAsync()
+        {
+            Bikes = await SmartContract.GetAvailableBicyclesFromDockingStationAsync(Name).ConfigureAwait(false);
         }
 
         /// <summary>

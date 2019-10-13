@@ -12,8 +12,6 @@ namespace RhodeIT.Databases
     public class RhodeITDB
     {
         private Realm db;
-        private readonly RhodeITSmartContract RhodeITSmartContract;
-        private readonly RhodeITService RhodeITService;
         /// <summary>
         /// Initializes a new instance of the <see cref="T:RealmDataBase"/> class.
         /// </summary>

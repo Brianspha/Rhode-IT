@@ -34,6 +34,7 @@ namespace RhodeIT.ViewModels
 
         private PurchaseRideCreditsViewModel PurchaseRideCreditsViewModel;
         private readonly CircleImage userImage;
+        RhodeITService SmartContract;
         private StackLayout main;
         public StackLayout Main
         {
@@ -67,9 +68,10 @@ namespace RhodeIT.ViewModels
         private void SetUp()
         {
             RhodeITDB db = new RhodeITDB();
+            SmartContract = new RhodeITService();
             details = new LoginDetails();
             details = db.GetUserDetails();
-            PurchaseRideCreditsViewModel = new PurchaseRideCreditsViewModel(db.GetUserDetails());
+            PurchaseRideCreditsViewModel = new PurchaseRideCreditsViewModel();
             Main = new StackLayout
             {
                 VerticalOptions = LayoutOptions.FillAndExpand,
@@ -79,12 +81,19 @@ namespace RhodeIT.ViewModels
             CreateUserInformationUIElements(out MaterialCard userInfoParent, studentNumberCard, topUpParent);
             RidesViewModel = new RidesViewModel();
             MyRides = InitialiseUpComingRidesList();
+            MyRides.ItemTapped += MyRides_ItemTapped;
             MaterialCard upcomingRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 5, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
             Label upComingLabel = new Label { Text = "Upcoming Rides", BackgroundColor = Color.White, TextColor = Color.Black, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
             upcomingRidesCardLabel.Content = new StackLayout { Children = { upComingLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
             Main.Children.Add(userInfoParent);
             Main.Children.Add(upcomingRidesCardLabel);
             Main.Children.Add(MyRides);
+        }
+
+        private void MyRides_ItemTapped(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
+        {
+            var rental = e.ItemData as Bicycle;
+
         }
 
         /// <summary>
@@ -113,16 +122,13 @@ namespace RhodeIT.ViewModels
             {
                 Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
                 Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station", TextColor = Color.Black };
-                stationName.SetBinding(Label.TextProperty, new Binding("StationName"));
+                stationName.SetBinding(Label.TextProperty, new Binding("ID"));
                 Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID", TextColor = Color.Black };
                 Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
-                bikeID.SetBinding(Label.TextProperty, new Binding("BikeID"));
-                Label duration = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
-                Label durationLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Duration", TextColor = Color.Black };
-                duration.SetBinding(Label.TextProperty, new Binding("Duration"));
+                bikeID.SetBinding(Label.TextProperty, new Binding("DockdeAt"));
                 Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
                 Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked", TextColor = Color.Black };
-                docked.SetBinding(Label.TextProperty, new Binding("Docked"));
+                docked.SetBinding(Label.TextProperty, new Binding("Status"));
                 SfButton details = new SfButton
                 {
                     Text = "Details",
@@ -131,17 +137,6 @@ namespace RhodeIT.ViewModels
                     CornerRadius = 20,
                     BorderColor = Color.Black,
                     BorderWidth = 1
-                };
-                SfButton cancel = new SfButton
-                {
-                    Text = "Cancel",
-                    BackgroundColor = Color.White,
-                    TextColor = Color.Black,
-                    BorderColor = Color.Black,
-                    BorderWidth = 1,
-                    CornerRadius = 20,
-
-
                 };
                 StackLayout bikeIDParent = new StackLayout
                 {
@@ -161,15 +156,6 @@ namespace RhodeIT.ViewModels
                             stationNameLabel,stationName
                         }
                 };
-                StackLayout durationParent = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.FillAndExpand,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    Orientation = StackOrientation.Horizontal,
-                    Children = {
-                            durationLabel,duration
-                        }
-                };
                 StackLayout dockedParent = new StackLayout
                 {
                     VerticalOptions = LayoutOptions.FillAndExpand,
@@ -185,7 +171,7 @@ namespace RhodeIT.ViewModels
                     HorizontalOptions = LayoutOptions.CenterAndExpand,
                     Orientation = StackOrientation.Horizontal,
                     Children = {
-                            details,cancel
+                            details
                         }
                 };
                 StackLayout parentInfo = new StackLayout
@@ -201,7 +187,6 @@ namespace RhodeIT.ViewModels
                 };
                 parentInfo.Children.Add(bikeIDParent);
                 parentInfo.Children.Add(stationNameParent);
-                parentInfo.Children.Add(durationParent);
                 parentInfo.Children.Add(dockedParent);
                 parentInfo.Children.Add(transactionRecieptParent);
                 parentInforCard.Content = parentInfo;
