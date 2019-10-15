@@ -5,8 +5,10 @@ using RhodeIT.Services.RhodeIT;
 using RhodeIT.Views;
 using SlideOverKit;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using Xamarin.Forms;
 using Xamarin.Forms.GoogleMaps;
@@ -120,14 +122,14 @@ namespace RhodeIT.ViewModels
                 HorizontalOptions = LayoutOptions.CenterAndExpand
             };
         }
-    
+
 
         public void CreatePins()
         {
             DockingStaions = RhodeITServices.GetDockingStations().Result;
             foreach (DockingStaion station in dockingStaions)
             {
-                Pin tempPin = new Pin() { Position = new Position(station.DockingStationInformation.Latitude, station.DockingStationInformation.Longitude), Label = station.DockingStationInformation.Name, Address = "Available Bicycles: " + station.AvailableBicycles.Count };
+                Pin tempPin = new Pin() { Position = new Position(station.DockingStationInformation.Latitude, station.DockingStationInformation.Longitude), Label = station.DockingStationInformation.Name, Address = "Available Bicycles: " + GetDockingStationCount(station.DockingStationInformation.Name, station.AvailableBicycles) };
                 Assembly assembly = typeof(MapsTab).GetTypeInfo().Assembly;
                 string file = files[0];
                 string[] names = assembly.GetManifestResourceNames();
@@ -135,9 +137,33 @@ namespace RhodeIT.ViewModels
                 Pins.Add(tempPin);
             }
         }
+        public int GetDockingStationCount(string stationName, IList<Bicycle> bicycles)
+        {
+            int count = 0;
+            var tempBicycles = new List<Bicycle>();
+            foreach(var bicycle in bicycles)
+            {
+                if(bicycle.Status== "Available")
+                {
+                    tempBicycles.Add(bicycle);
+                }
+            }
+            var sortedBicycles = from bicycle in tempBicycles
+                                 group bicycle by bicycle.DockdeAt into sorted
+                                 let tempcount = sorted.Count()
+                                 orderby tempcount descending
+                                 select new { Name = sorted.Key, Count = tempcount };
+            foreach (var station in sortedBicycles)
+            {
+                if (station.Name == stationName)
+                {
+                    count = station.Count;
+                    break;
+                }
+            }
+            return count;
 
-
-
+        }
         private void CustomMap_PinClicked(object sender, PinClickedEventArgs e)
         {
             //@dev get pin details

@@ -8,7 +8,7 @@ using XF.Material.Forms.UI;
 
 namespace RhodeIT.ViewModels
 {
-    public class RideHistoryViewModel
+    public class RideHistoryViewModel : INotifyPropertyChanged
     {
         private MaterialCard myPastRides;
         public MaterialCard MyPastRides
@@ -19,7 +19,7 @@ namespace RhodeIT.ViewModels
                 if (myPastRides != value)
                 {
                     myPastRides = value;
-                    OnPropertyChanged(nameof(MyPastRides));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(MyPastRides)));
                 }
             }
         }
@@ -33,7 +33,7 @@ namespace RhodeIT.ViewModels
                 if (value != rideHistory)
                 {
                     rideHistory = value;
-                    OnPropertyChanged(nameof(RideHistory));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(RideHistory)));
                 }
             }
         }
@@ -47,6 +47,20 @@ namespace RhodeIT.ViewModels
         {
             SetUp();
         }
+
+        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+        {
+            add
+            {
+                PropertyChanged = value;
+            }
+
+            remove
+            {
+                PropertyChanged = null;
+            }
+        }
+
         /// <summary>
         /// Sets up the UI elements to be rendered by the RideHistory View
         /// </summary>
@@ -64,7 +78,7 @@ namespace RhodeIT.ViewModels
             SfListView pastRides = new SfListView
             {
                 ItemSize = 350,
-                ItemsSource = new RidesViewModel().Rides,
+                ItemsSource = new TransactionHistoryViewModel().Receipts,
                 LayoutManager = new LinearLayout(),
                 ItemTemplate = InitialiseListTemplates()
             };
@@ -85,23 +99,13 @@ namespace RhodeIT.ViewModels
         {
             return new DataTemplate(() =>
             {
-                Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
-                Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station", TextColor = Color.Black };
-                stationName.SetBinding(Label.TextProperty, new Binding("StationName"));
-                Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID", TextColor = Color.Black };
-                Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15,TextColor=Color.Black };
-                bikeID.SetBinding(Label.TextProperty, new Binding("BikeID"));
-                Label duration = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
-                Label durationLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Duration", TextColor = Color.Black };
-                duration.SetBinding(Label.TextProperty, new Binding("Duration"));
-                Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
-                Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked", TextColor = Color.Black };
-                docked.SetBinding(Label.TextProperty, new Binding("Docked"));
-                Label transactionReciept = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
-                Label transactionRecieptLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "TransactionReceipt", TextColor = Color.Black };
-                transactionReciept.SetBinding(Label.TextProperty, new Binding("TransactionReciept"));
-
-                StackLayout bikeIDParent = new StackLayout
+                Label receipt = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
+                Label receiptLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Receipt", TextColor = Color.Black };
+                receiptLabel.SetBinding(Label.TextProperty, new Binding("Receipt"));
+                Label activity = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "Activity", TextColor = Color.Black };
+                Label activityLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15,TextColor=Color.Black };
+                activity.SetBinding(Label.TextProperty, new Binding("Activity"));
+                  StackLayout activityParent = new StackLayout
                 {
                     VerticalOptions = LayoutOptions.FillAndExpand,
                     HorizontalOptions = LayoutOptions.FillAndExpand,
@@ -109,7 +113,7 @@ namespace RhodeIT.ViewModels
                     Padding = 0,
                     HeightRequest = 30,
                     Children = {
-                            bikeIDLabel,bikeID
+                            activityLabel,activity
                         }
                 };
                 StackLayout stationNameParent = new StackLayout
@@ -120,38 +124,7 @@ namespace RhodeIT.ViewModels
                     Padding = 0,
                     HeightRequest = 30,
                     Children = {
-                            stationNameLabel,stationName
-                        }
-                };
-                StackLayout durationParent = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.FillAndExpand,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    Orientation = StackOrientation.Horizontal,
-                    Padding = 0,
-                    HeightRequest = 30,
-                    Children = {
-                            durationLabel,duration
-                        }
-                };
-                StackLayout dockedParent = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.FillAndExpand,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    Orientation = StackOrientation.Horizontal,
-                    Padding = 0,
-                    HeightRequest = 30,
-                    Children = {
-                            dockedLabel,docked,
-                        }
-                };
-                StackLayout transactionHashParent = new StackLayout { VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand, Children = { transactionReciept } };
-                StackLayout transactionRecieptParent = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.FillAndExpand,
-                    HorizontalOptions = LayoutOptions.CenterAndExpand,
-                    Children = {
-                            transactionRecieptLabel
+                            receiptLabel,receipt
                         }
                 };
                 StackLayout parentInfo = new StackLayout
@@ -159,12 +132,8 @@ namespace RhodeIT.ViewModels
                     VerticalOptions = LayoutOptions.FillAndExpand,
                     HorizontalOptions = LayoutOptions.FillAndExpand,
                     Children ={
-                        bikeIDParent,
+                        activityParent,
                         stationNameParent,
-                        durationParent,
-                        dockedParent,
-                        transactionRecieptParent,
-                        transactionHashParent
                     }
                 };
                 MaterialCard parentInforCard = new MaterialCard
@@ -185,12 +154,12 @@ namespace RhodeIT.ViewModels
             });
         }
         /// <summary>
-        /// Invoked when a Property is assingned a new value
+        /// Invoked when a property is assigned a new value
         /// </summary>
-        /// <param name="name"></param>
-        public void OnPropertyChanged(string name)
+        /// <param name="e"> property thats changed</param>
+        public void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, e);
         }
 
     }

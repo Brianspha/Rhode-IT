@@ -6,11 +6,12 @@ using RhodeIT.Services.RhodeIT;
 using Syncfusion.XForms.PopupLayout;
 using Syncfusion.XForms.TextInputLayout;
 using System;
+using System.ComponentModel;
 using Xamarin.Forms;
 
 namespace RhodeIT.ViewModels
 {
-    public class PurchaseRideCreditsViewModel
+    public class PurchaseRideCreditsViewModel : INotifyPropertyChanged
     {
 
         public SfPopupLayout PopupLayout;
@@ -19,6 +20,9 @@ namespace RhodeIT.ViewModels
         private LoginDetails Details;
         private RhodeITDB db;
         private RhodesDataBase RhodesDataBase;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public PurchaseRideCreditsViewModel()
         {
             SetUp();
@@ -67,6 +71,7 @@ namespace RhodeIT.ViewModels
         {
             RhodeITService rhodeITServices = new RhodeITService();
             IUserDialogs dialog = UserDialogs.Instance;
+            dialog.ShowLoading("Purchasing Ride Credits...");
             try
             {
                 bool result = int.TryParse(amount.Text, out int rideCredit);
@@ -87,11 +92,13 @@ namespace RhodeIT.ViewModels
                         Details.RideCredits += rideCredit;
                         RhodesDataBase.ChargeUserRideCreditBalanceToAccount(Details).ConfigureAwait(false);
                         db.UpdateLoginDetails(Details);
+                        dialog.HideLoading();
                         dialog.Alert(string.Format("Succesfully recharged ride credits with {0}", rideCredit), "Success", "OK");
                     }
                 }
                 catch (Exception e)
                 {
+                    dialog.HideLoading();
                     PopupLayout.Dismiss();
                     Console.WriteLine("Error whilst purcasing credits: " + e.Message);
                     dialog.Alert("Something went wrong whilst purchasing credit", "Insufficient Funds", "OK");
@@ -99,6 +106,7 @@ namespace RhodeIT.ViewModels
             }
             catch (InvalidNumberException e)
             {
+                dialog.HideLoading();
                 PopupLayout.Dismiss();
                 Console.WriteLine("Error whilst purcasing credits: " + e.Message);
                 dialog.Alert("Please ensure you entered a valid number e.g. 12", "Invalid Number", "OK");

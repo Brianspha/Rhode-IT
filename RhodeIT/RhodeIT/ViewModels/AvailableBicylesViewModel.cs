@@ -3,10 +3,10 @@ using RhodeIT.Databases;
 using RhodeIT.Models;
 using RhodeIT.Services.RhodeIT;
 using Syncfusion.ListView.XForms;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 using XF.Material.Forms.UI;
@@ -86,7 +86,6 @@ namespace RhodeIT.ViewModels
         /// <param name="main"></param>
         public AvailableBicylesViewModel(string venue, Command show, Command closeMenu, StackLayout listView)
         {
-
             Name = venue;
             ListViewParent = listView;
             Close = closeMenu;
@@ -102,7 +101,7 @@ namespace RhodeIT.ViewModels
         /// </summary>
         private void SetUp()
         {
-            UpdateBicycleListAsync();
+            UpdateBicycleListAsync().Wait();
             listView = new SfListView
             {
                 ItemSize = 120,
@@ -131,7 +130,7 @@ namespace RhodeIT.ViewModels
                     HorizontalOptions = LayoutOptions.CenterAndExpand,
                     Orientation = StackOrientation.Horizontal,
                     Padding = 0,
-                    HeightRequest = 30,
+                    HeightRequest = 50,
                     Children = {
                             bikeIDLabel,bikeID
                         }
@@ -144,7 +143,6 @@ namespace RhodeIT.ViewModels
                 };
                 Frame cardFrame = new Frame
                 {
-                    WidthRequest = 120,
                     HeightRequest = 100,
                     CornerRadius = 5,
                     BackgroundColor = Color.WhiteSmoke,
@@ -158,17 +156,18 @@ namespace RhodeIT.ViewModels
         private void ListView_ItemTapped(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
         {
             Bicycle bicycle = e.ItemData as Bicycle;
-            string ethAddress = new RhodeITDB().GetUserDetails().Ethereum_Address;
-            bicycle.renter = ethAddress;
+            RhodeITDB tempDB = new RhodeITDB();
+            LoginDetails details = tempDB.GetUserDetails();
+            bicycle.renter = details.Ethereum_Address;
             IUserDialogs dialog = UserDialogs.Instance;
             dialog.ShowLoading("Renting Out bicycle...");
             ConfiguredTaskAwaitable<bool> success = SmartContract.RentBicycleRequestAndWaitForReceiptAsync(bicycle).ConfigureAwait(false);
             if (success.GetAwaiter().GetResult())
             {
                 dialog.HideLoading();
+                UpdateBicycleListAsync().Wait();
                 dialog.Toast("Success!!");
                 dialog.Alert("Successfully rented out bicycle", "Success", "OK");
-                UpdateBicycleListAsync();
             }
             else
             {
@@ -176,12 +175,18 @@ namespace RhodeIT.ViewModels
                 dialog.Toast("Error!!");
                 dialog.Alert("Something went wrong whilst processing bicycle please ensure you have enough ride credits", "Error", "OK");
             }
-
         }
-
-        private async void UpdateBicycleListAsync()
+        private async Task UpdateBicycleListAsync()
         {
-            Bikes = await SmartContract.GetAvailableBicyclesFromDockingStationAsync(Name).ConfigureAwait(false);
+            ObservableCollection<Bicycle> tempBikes = await SmartContract.GetAvailableBicyclesFromDockingStationAsync(Name).ConfigureAwait(false);
+            Bikes = new ObservableCollection<Bicycle>();
+            foreach (Bicycle bicycle in tempBikes)
+            {
+                if (bicycle.DockdeAt == Name)
+                {
+                    Bikes.Add(bicycle);
+                }
+            }
         }
 
         /// <summary>

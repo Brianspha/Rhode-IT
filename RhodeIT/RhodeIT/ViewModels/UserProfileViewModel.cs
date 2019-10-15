@@ -13,7 +13,7 @@ using XF.Material.Forms.UI;
 
 namespace RhodeIT.ViewModels
 {
-    public class UserProfileViewModel
+    public class UserProfileViewModel : INotifyPropertyChanged
     {
         public LoginDetails details;
         private SfListView myRides;
@@ -27,14 +27,14 @@ namespace RhodeIT.ViewModels
                 if (value != myRides)
                 {
                     myRides = value;
-                    OnPropertyChanged(nameof(myRides));
+                    OnPropertyChanged(nameof(MyRides));
                 }
             }
         }
 
         private PurchaseRideCreditsViewModel PurchaseRideCreditsViewModel;
         private readonly CircleImage userImage;
-        RhodeITService SmartContract;
+        private RhodeITService SmartContract;
         private StackLayout main;
         public StackLayout Main
         {
@@ -92,7 +92,7 @@ namespace RhodeIT.ViewModels
 
         private void MyRides_ItemTapped(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
         {
-            var rental = e.ItemData as Bicycle;
+            Bicycle rental = e.ItemData as Bicycle;
 
         }
 
@@ -249,14 +249,10 @@ namespace RhodeIT.ViewModels
                 HorizontalOptions = LayoutOptions.FillAndExpand
             };
             LoginDetails details = new RhodeITDB().GetUserDetails();
-            int balance = details.RideCredits;
-            if (balance == 0)
-            {
-                balance = GetUserCreditBalanceAsync(details).Result;
-            }
+            string balance = GetUserCreditBalanceAsync(details).Result;
             Label rideCredits = new Label
             {
-                Text = balance.ToString(),
+                Text = balance,
                 TextColor = Color.Black
             };
             rideCreditsParent.Children.Add(rideCreditsLabel);
@@ -334,7 +330,16 @@ namespace RhodeIT.ViewModels
         {
             PurchaseRideCreditsViewModel.PopupLayout.Show();
         }
-
+        /// <summary>
+        /// Fetches a user ride credit from the smartcontract storage
+        /// </summary>
+        /// <param name="details">Users login details</param>
+        /// <returns>string</returns>
+        private static async Task<string> GetUserCreditBalanceAsync(LoginDetails details)
+        {
+            string balance = await new RhodeITService().GetUsercreditQueryAsync(details.Ethereum_Address).ConfigureAwait(false);
+            return balance;
+        }
 
         /// <summary>
         /// Invoked when a property is assingned a new value
@@ -349,10 +354,6 @@ namespace RhodeIT.ViewModels
             }
         }
 
-        private static async Task<int> GetUserCreditBalanceAsync(LoginDetails details)
-        {
-            int balance = await new RhodeITService().GetUsercreditQueryAsync(details.Ethereum_Address).ConfigureAwait(false);
-            return balance;
-        }
+
     }
 }

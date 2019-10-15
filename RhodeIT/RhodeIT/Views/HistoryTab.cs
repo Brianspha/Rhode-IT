@@ -11,7 +11,6 @@ namespace RhodeIT.Views
 {
 	public class HistoryTab : ContentPage
 	{
-        HistroyTabViewModel viewModel;
 		public HistoryTab ()
 		{
             ToolbarItem logOut = new ToolbarItem { Text = "Logout", Order = ToolbarItemOrder.Primary, Priority = 1 };

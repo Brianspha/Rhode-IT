@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Http;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,20 +44,20 @@ namespace RhodeIT.Services.RhodeIT
             {
                 FromAddress = details.Ethereum_Address,
                 Gas = Variables.gas,
-                // GasPrice = Variables.gasPrice,
                 Studentno_staff_no = details.User_ID
             };
             string receipt = "";
             bool exists = await UserExistsRequestAndWaitForReceiptAsync(details.Ethereum_Address).ConfigureAwait(false);
             if (exists)
             {
-                db.StoreTransactionReceipt(new TransactionReciept { Receipt = "0x", Activity = "LoggedIn" });
+                db.StoreTransactionReceipt(new Models.TransactionReceipt { Receipt = "0x", Activity = "LoggedIn" });
             }
             else
             {
                 receipt = await ContractHandler.SendRequestAsync(addUserFunction).ConfigureAwait(false);
                 exists = await UserExistsRequestAndWaitForReceiptAsync(details.Ethereum_Address).ConfigureAwait(false);
-                db.StoreTransactionReceipt(new TransactionReciept { Receipt = receipt, Activity = "Registered" });
+                db.StoreTransactionReceipt(new Models.TransactionReceipt { Receipt = receipt, Activity = "Registered" });
+                db.UpdateLoginDetails(details);
             }
             return new Tuple<bool, string>(exists, receipt);
         }
@@ -71,24 +72,25 @@ namespace RhodeIT.Services.RhodeIT
             bool results = await ContractHandler.QueryAsync<UserExistsFunction, bool>(userExistsFunction, null).ConfigureAwait(false);
             return results;
         }
-        public async Task<int> GetUsercreditQueryAsync(string address)
+        public async Task<string> GetUsercreditQueryAsync(string address)
         {
             GetUsercreditFunction getUsercreditFunction = new GetUsercreditFunction
             {
                 FromAddress = address,
-                Gas = Variables.gas,
-                ///    GasPrice = Variables.gasPrice
+                Gas = Variables.gas
             };
-            int balance = 0;
+            BigInteger balance = 0;
             try
             {
-                balance = await ContractHandler.QueryAsync<GetUsercreditFunction, int>(getUsercreditFunction, null).ConfigureAwait(false);
+                GetUsercreditOutputDTO balanceOutput = await ContractHandler.QueryDeserializingToObjectAsync<GetUsercreditFunction, GetUsercreditOutputDTO>(getUsercreditFunction, null).ConfigureAwait(false);
+                balance = (balanceOutput.ReturnValue1);
             }
-            catch (OverflowException)
+            catch (OverflowException e)
             {
                 Console.WriteLine("Problem with convert BigInt to int return 0 this is a bug");
+                Console.WriteLine("Error: " + e.Message);
             }
-            return balance;
+            return balance.ToString();
         }
         public async Task<string> UpdateCreditRequestAsync(string address, int amount)
         {
@@ -98,11 +100,11 @@ namespace RhodeIT.Services.RhodeIT
                 FromAddress = Variables.adminAddress,
                 Gas = Variables.gas,
                 AmountToSend = amount,
-                Receipient=address
-                
+                Receipient = address
+
             };
             string receipt = await ContractHandler.SendRequestAsync(updateCreditFunction).ConfigureAwait(false);
-            db.StoreTransactionReceipt(new TransactionReciept { Receipt = receipt, Activity = "Purchased Ride Credits" });
+            db.StoreTransactionReceipt(new Models.TransactionReceipt { Receipt = receipt, Activity = "Purchased Ride Credits" });
             return receipt;
         }
         public async Task<bool> RentBicycleRequestAndWaitForReceiptAsync(Bicycle rental)
@@ -113,14 +115,13 @@ namespace RhodeIT.Services.RhodeIT
                 BicycleId = rental.ID,
                 DockingStation = rental.DockdeAt,
                 FromAddress = rental.renter,
-                Gas = Variables.gas,
-                ///      GasPrice = Variables.gasPrice,
-                ///   
+                Gas = Variables.gas
             };
             try
             {
-                TransactionReceipt transactionReceipt = await ContractHandler.SendRequestAndWaitForReceiptAsync(rentBicycleFunction, null).ConfigureAwait(false);
-                db.StoreTransactionReceipt(new TransactionReciept { Receipt = transactionReceipt.TransactionHash, Activity = "Rented out bicycle" });
+                Nethereum.RPC.Eth.DTOs.TransactionReceipt transactionReceipt = await ContractHandler.SendRequestAndWaitForReceiptAsync(rentBicycleFunction, null).ConfigureAwait(false);
+                db.StoreTransactionReceipt(new Models.TransactionReceipt { Receipt = transactionReceipt.TransactionHash, Activity = "Rented out bicycle" });
+                db.StoreUserRide(new Ride { ID = rental.ID, StationName = rental.DockdeAt, Docked = rental.Status, TransactionReciept = transactionReceipt.TransactionHash });
                 rentalResults = await UnlockBicycleAsync(rental).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -137,7 +138,12 @@ namespace RhodeIT.Services.RhodeIT
             foreach (string key in keys)
             {
                 GetDockingStationOutputDTO dockingStationDetails = await GetDockingStationQueryAsync(key).ConfigureAwait(false);
-                DockingStaion dockingStation = new DockingStaion { DockingStationInformation = new VenueLocation { Name = dockingStationDetails.Name, Latitude = double.Parse(dockingStationDetails.Latitude, System.Globalization.CultureInfo.InvariantCulture), Longitude = double.Parse(dockingStationDetails.Longitude, System.Globalization.CultureInfo.InvariantCulture) } };
+                ObservableCollection<Bicycle> availableBicycles = await GetAvailableBicyclesFromDockingStationAsync(key).ConfigureAwait(false);
+                DockingStaion dockingStation = new DockingStaion { DockingStationInformation = new VenueLocation { Name = dockingStationDetails.ReturnValue1, Latitude = double.Parse(dockingStationDetails.ReturnValue2, System.Globalization.CultureInfo.InvariantCulture), Longitude = double.Parse(dockingStationDetails.ReturnValue3, System.Globalization.CultureInfo.InvariantCulture) } };
+                foreach (Bicycle bicycle in availableBicycles)
+                {
+                    dockingStation.AvailableBicycles.Add(bicycle);
+                }
                 temp.Add(dockingStation);
             }
             return temp;
@@ -209,7 +215,7 @@ namespace RhodeIT.Services.RhodeIT
                 GetBicycleOutputDTO bicycleDetails = await GetBicycleInformation(key).ConfigureAwait(false);
                 if (bicycleDetails.ReturnValue2)
                 {
-                    bicycles.Add(new Bicycle { ID = key, Status = bicycleDetails.ReturnValue2 ==true? "Available":"Not Available", DockdeAt = bicycleDetails.ReturnValue1 });
+                    bicycles.Add(new Bicycle { ID = key, Status = bicycleDetails.ReturnValue2 == true ? "Available" : "Not Available", DockdeAt = bicycleDetails.ReturnValue1 });
                 }
             }
             return bicycles;
@@ -262,6 +268,16 @@ namespace RhodeIT.Services.RhodeIT
 
             });
             return Task.FromResult(success);
+        }
+        public async Task<int> GetCurrentRideCostQueryAsync()
+        {
+            GetCurrentRideCostFunction getCurrentRideCostFunction = new GetCurrentRideCostFunction
+            {
+                Gas = Variables.gas,
+                FromAddress = Variables.adminAddress
+            };
+            int cost = await ContractHandler.QueryAsync<GetCurrentRideCostFunction, int>(getCurrentRideCostFunction, null).ConfigureAwait(false);
+            return cost;
         }
     }
 

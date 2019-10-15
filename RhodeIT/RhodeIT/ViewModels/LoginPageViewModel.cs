@@ -9,7 +9,6 @@ using Syncfusion.XForms.Buttons;
 using Syncfusion.XForms.TextInputLayout;
 using System;
 using System.ComponentModel;
-using System.Reflection;
 using Xamarin.Forms;
 
 namespace RhodeIT.ViewModels
@@ -25,7 +24,7 @@ namespace RhodeIT.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
 
         private readonly string[] Icons = new string[] { "Icon.png" };
-        private  RhodeITSmartContract SmartContract;
+        private RhodeITSmartContract SmartContract;
         private CircleImage LoginPageIcon;
         public int FontSize
         {
@@ -116,7 +115,7 @@ namespace RhodeIT.ViewModels
                 Aspect = Aspect.AspectFill,
                 HorizontalOptions = LayoutOptions.Center,
                 Source = ImageSource.FromUri(new Uri("https://lh3.googleusercontent.com/m_1Pc3Sfge_muByZBS1KVgwvDYSQldlfmKkOV4QBqRwoyaf2zPQxRiXLjckmCctk-o1X=s85")),
-                Opacity=100
+                Opacity = 100
             };
             PagelabelStackLayOut.Children.Add(LoginPageIcon);
             Maincontent.Children.Add(PagelabelStackLayOut);
@@ -149,7 +148,7 @@ namespace RhodeIT.ViewModels
             {
 
                 // await test.LoginAsync(studentNo.Text, password.Text);
-                Tuple<bool,LoginDetails> results = await rhodesDataBase.VerifyStudentAysnc(new LoginDetails { Password = password.Text, User_ID = studentNo.Text.ToLower() });
+                Tuple<bool, LoginDetails> results = await rhodesDataBase.VerifyStudentAysnc(new LoginDetails { Password = password.Text, User_ID = studentNo.Text.ToLower() });
                 ///@dev 
 
                 /*
@@ -159,7 +158,7 @@ namespace RhodeIT.ViewModels
                  */
                 if (results.Item1)
                 {
-                    SmartContract.RegisterStudent(results.Item2);
+                    await SmartContract.RegisterStudent(results.Item2).ConfigureAwait(false);
                     Console.WriteLine("Login succesfull");
                     dialog.HideLoading();
                     Application.Current.MainPage = new NavigationPage(new MainMenuTab());

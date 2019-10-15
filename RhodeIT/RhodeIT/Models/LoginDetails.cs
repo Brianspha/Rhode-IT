@@ -11,6 +11,6 @@ namespace RhodeIT.Models
         public string Password { get; set; }
         public string TransactionHash { get;  set; }
         public string Ethereum_Address { get; set; }
-        public int RideCredits { get; set; }
+        public string RideCredits { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using RhodeIT.Models;
 using RhodeIT.Services.RhodeIT;
 using RhodeIT.Services.RhodeIT.ContractDefinition;
 using System;
+using System.Threading.Tasks;
 
 namespace RhodeIT.Classes
 {
@@ -18,7 +19,7 @@ namespace RhodeIT.Classes
         private RhodeITDB rhodeITDB;
         private RhodesDataBase rhodesDataBase;
         public Web3Quorum web3 { get; set; }
-        public TransactionReceipt Receipt { get; private set; }
+        public Nethereum.RPC.Eth.DTOs.TransactionReceipt Receipt { get; private set; }
         public RhodeITService SmartContractFunctions { get; private set; }
 
         private RhodeITDeployment BaseContract;
@@ -51,11 +52,11 @@ namespace RhodeIT.Classes
         /// <param name="studentNo">student number</param>
         /// <param name="password">password</param>
         /// <returns>if the login was succefull or not</returns>
-        public async void RegisterStudent(LoginDetails details)
+        public async Task RegisterStudent(LoginDetails details)
         {
             details.User_ID = details.User_ID.ToLower();
             string Thash = "";
-            Tuple<bool, string> results = await SmartContractFunctions.AddUserRequestAsync(details);
+            Tuple<bool, string> results = await SmartContractFunctions.AddUserRequestAsync(details).ConfigureAwait(false);
             Thash = results.Item2;
             details.TransactionHash = Thash;
             rhodeITDB.UpdateLoginDetails(details);
