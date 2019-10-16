@@ -59,7 +59,6 @@ namespace RhodeIT.ViewModels
 
         public StackLayout setUpView()
         {
-            db = new RhodeITDB();
             Maincontent = new StackLayout
             {
                 VerticalOptions = LayoutOptions.CenterAndExpand,

@@ -1,24 +1,17 @@
 ﻿using RhodeIT.Databases;
 using RhodeIT.Models;
-using RhodeIT.Services.RhodeIT;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
 
 namespace RhodeIT.ViewModels
 {
     public class RidesViewModel
     {
-
-        ObservableCollection<Ride> rides;
+        private ObservableCollection<Ride> rides;
         public ObservableCollection<Ride> Rides
         {
-            get
-            {
-                return rides;
-            }
+            get => rides;
             set
             {
                 if (value != rides)
@@ -29,7 +22,6 @@ namespace RhodeIT.ViewModels
             }
         }
         public event PropertyChangedEventHandler PropertyChanged;
-        RhodeITDB db;
 
 
         /// <summary>
@@ -45,11 +37,11 @@ namespace RhodeIT.ViewModels
         private void SetUp()
         {
             Rides = new ObservableCollection<Ride>();
-            db = new RhodeITDB();
-            var userRides = db.GetUserUpComingRides();
-            for(int i=0; i < 5; i++)
+            RhodeITDB db = new RhodeITDB();
+            List<Ride> userRides = db.GetUserUpComingRides();
+            foreach (Ride ride in userRides)
             {
-                Rides.Add(new Ride { ID = i.ToString(), Docked = "Available", TransactionReciept = "0x6686491f125ab926f51b1ddf3b8ac370c902cb637a3fb6af2a9ef1b59df07a1a", StationName = "Hamilton" });
+                Rides.Add(new Ride { ID = ride.ID, Docked = ride.Docked, TransactionReceipt = ride.TransactionReceipt, StationName = ride.StationName });
             }
         }
 

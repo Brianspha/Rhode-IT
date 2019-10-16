@@ -8,7 +8,7 @@ namespace RhodeIT.Models
         public string ID { get; set; }
         public string StationName { get; set; }
         public string Docked { get; set; }
-        public string TransactionReciept { get; set; }
+        public string TransactionReceipt { get; set; }
 
 
     }

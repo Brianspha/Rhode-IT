@@ -38,7 +38,6 @@ namespace RhodeIT.Classes
         public void SetupAsync()
         {
             BaseContract = new RhodeITDeployment();
-            rhodeITDB = new RhodeITDB();
             rhodesDataBase = new RhodesDataBase();
             Account = new ManagedAccount(Variables.adminAddress, Variables.Passwordd);
             web3 = new Web3Quorum(Variables.RPCAddressNodeGenesis);
@@ -54,6 +53,7 @@ namespace RhodeIT.Classes
         /// <returns>if the login was succefull or not</returns>
         public async Task RegisterStudent(LoginDetails details)
         {
+            rhodeITDB = new RhodeITDB();
             details.User_ID = details.User_ID.ToLower();
             string Thash = "";
             Tuple<bool, string> results = await SmartContractFunctions.AddUserRequestAsync(details).ConfigureAwait(false);

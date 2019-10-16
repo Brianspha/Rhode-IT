@@ -71,11 +71,6 @@ namespace RhodeIT.Databases
             CrossSecureStorage.Current.SetValue("ID", dets.User_ID);
             CrossSecureStorage.Current.SetValue("Credit", dets.RideCredits == null ? "" : dets.RideCredits.ToString());
             CrossSecureStorage.Current.SetValue("Address", dets.Ethereum_Address);
-            db.Write(() =>
-            {
-                dets.Password = "";//@dev we dont store password in realm db since we keeping that in securestorage
-                db.Add(dets, true);
-            });
             Console.WriteLine("Logged in");
         }
         /// <summary>
@@ -108,12 +103,12 @@ namespace RhodeIT.Databases
             SetUpDB();
             CrossSecureStorage.Current.DeleteKey("Password");
             CrossSecureStorage.Current.DeleteKey("ID");
+            CrossSecureStorage.Current.DeleteKey("Ethereum_Address");
             Console.WriteLine("Logging out");
-
         }
 
         /// <summary>
-        /// @dev stores all venues passed into the function
+        /// Stores all venues passed into the function
         /// </summary>
         /// <param name="locations"> names of the docking stations</param>
         public void StoreVenueLocations(List<VenueLocation> locations)

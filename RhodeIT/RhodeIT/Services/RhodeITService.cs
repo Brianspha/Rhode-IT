@@ -27,30 +27,29 @@ namespace RhodeIT.Services.RhodeIT
 
         public Contract Contract { get; }
         public ContractHandler ContractHandler { get; }
-        public RhodeITDB db;
         private HttpClient Client;
         public RhodeITService()
         {
             Web3 = new Web3(Variables.RPCAddressNodeGenesis);
             Contract = Web3.Eth.GetContract(Variables.ABI, Variables.ContractAddress);
             ContractHandler = Web3.Eth.GetContractHandler(Variables.ContractAddress);
-            db = new RhodeITDB();
             Client = new HttpClient();
         }
 
         public async Task<Tuple<bool, string>> AddUserRequestAsync(LoginDetails details)
         {
+            RhodeITDB db = new RhodeITDB();
             AddUserFunction addUserFunction = new AddUserFunction
             {
                 FromAddress = details.Ethereum_Address,
                 Gas = Variables.gas,
                 Studentno_staff_no = details.User_ID
             };
-            string receipt = "";
+            string receipt = "0x";
             bool exists = await UserExistsRequestAndWaitForReceiptAsync(details.Ethereum_Address).ConfigureAwait(false);
             if (exists)
             {
-                db.StoreTransactionReceipt(new Models.TransactionReceipt { Receipt = "0x", Activity = "LoggedIn" });
+                db.StoreTransactionReceipt(new Models.TransactionReceipt { Receipt = receipt, Activity = "LoggedIn" });
             }
             else
             {
@@ -94,6 +93,7 @@ namespace RhodeIT.Services.RhodeIT
         }
         public async Task<string> UpdateCreditRequestAsync(string address, int amount)
         {
+            RhodeITDB db = new RhodeITDB();
             //@dev only admin is allowed to approve the purchasing of ride credits
             UpdateCreditFunction updateCreditFunction = new UpdateCreditFunction
             {
@@ -109,6 +109,7 @@ namespace RhodeIT.Services.RhodeIT
         }
         public async Task<bool> RentBicycleRequestAndWaitForReceiptAsync(Bicycle rental)
         {
+            RhodeITDB db = new RhodeITDB();
             bool rentalResults = false;
             RentBicycleFunction rentBicycleFunction = new RentBicycleFunction
             {
@@ -121,7 +122,7 @@ namespace RhodeIT.Services.RhodeIT
             {
                 Nethereum.RPC.Eth.DTOs.TransactionReceipt transactionReceipt = await ContractHandler.SendRequestAndWaitForReceiptAsync(rentBicycleFunction, null).ConfigureAwait(false);
                 db.StoreTransactionReceipt(new Models.TransactionReceipt { Receipt = transactionReceipt.TransactionHash, Activity = "Rented out bicycle" });
-                db.StoreUserRide(new Ride { ID = rental.ID, StationName = rental.DockdeAt, Docked = rental.Status, TransactionReciept = transactionReceipt.TransactionHash });
+                db.StoreUserRide(new Ride { ID = rental.ID, StationName = rental.DockdeAt, Docked = rental.Status, TransactionReceipt = transactionReceipt.TransactionHash });
                 rentalResults = await UnlockBicycleAsync(rental).ConfigureAwait(false);
             }
             catch (Exception e)

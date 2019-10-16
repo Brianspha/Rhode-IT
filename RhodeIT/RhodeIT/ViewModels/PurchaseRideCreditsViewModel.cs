@@ -18,7 +18,6 @@ namespace RhodeIT.ViewModels
         private DataTemplate PopUpContents;
         private Entry amount;
         private LoginDetails Details;
-        private RhodeITDB db;
         private RhodesDataBase RhodesDataBase;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -58,7 +57,6 @@ namespace RhodeIT.ViewModels
             PopupLayout.Closed += PopupLayout_Closed;
             PopupLayout.Opened += PopupLayout_Opened;
             PopupLayout.PopupView.AcceptCommand = new Command(() => { Purchase_Ride_Credits(); });
-            db = new RhodeITDB();
             RhodesDataBase = new RhodesDataBase();
 
         }
@@ -70,6 +68,7 @@ namespace RhodeIT.ViewModels
         public void Purchase_Ride_Credits()
         {
             RhodeITService rhodeITServices = new RhodeITService();
+            RhodeITDB db = new RhodeITDB();
             IUserDialogs dialog = UserDialogs.Instance;
             dialog.ShowLoading("Purchasing Ride Credits...");
             try

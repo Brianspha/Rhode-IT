@@ -8,7 +8,6 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms;
-using XamEffects;
 using XF.Material.Forms.UI;
 
 namespace RhodeIT.ViewModels
@@ -92,7 +91,16 @@ namespace RhodeIT.ViewModels
 
         private void MyRides_ItemTapped(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
         {
-            Bicycle rental = e.ItemData as Bicycle;
+            Ride rental = e.ItemData as Ride;
+            RhodeITDB db = new RhodeITDB();
+            LoginDetails details = db.GetUserDetails();
+            DockBicycleAsync(new Bicycle { ID = rental.ID, renter = details.Ethereum_Address, DockdeAt = rental.StationName }).Wait();
+
+        }
+
+        private async Task DockBicycleAsync(Bicycle bicycle)
+        {
+            await SmartContract.DockBicycle(bicycle).ConfigureAwait(false);
 
         }
 
@@ -122,16 +130,16 @@ namespace RhodeIT.ViewModels
             {
                 Label stationName = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
                 Label stationNameLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Station", TextColor = Color.Black };
-                stationName.SetBinding(Label.TextProperty, new Binding("ID"));
+                stationName.SetBinding(Label.TextProperty, new Binding("StationName"));
                 Label bikeID = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "BikeID", TextColor = Color.Black };
                 Label bikeIDLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
-                bikeID.SetBinding(Label.TextProperty, new Binding("DockdeAt"));
+                bikeID.SetBinding(Label.TextProperty, new Binding("ID"));
                 Label docked = new Label { BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
                 Label dockedLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Docked", TextColor = Color.Black };
-                docked.SetBinding(Label.TextProperty, new Binding("Status"));
+                docked.SetBinding(Label.TextProperty, new Binding("Docked"));
                 SfButton details = new SfButton
                 {
-                    Text = "Details",
+                    Text = "Cancel",
                     BackgroundColor = Color.White,
                     TextColor = Color.Black,
                     CornerRadius = 20,
@@ -198,7 +206,6 @@ namespace RhodeIT.ViewModels
                     Padding = 3,
                     Content = parentInforCard
                 };
-                Commands.SetTapParameter(cardFrame, Color.SkyBlue);
                 return cardFrame;
             });
         }
