@@ -1,26 +1,21 @@
-﻿using Syncfusion.XForms.TabView;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xamarin.Forms;
-using Prism;
+﻿using RhodeIT.Databases;
 using RhodeIT.ViewModels;
-using Xamarin.Forms.Xaml;
 using SlideOverKit;
-using RhodeIT.Databases;
+using System;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace RhodeIT.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MapsTab : MenuContainerPage
     {
-        MapsTabViewModel viewModel;
+        private MapsTabViewModel viewModel;
         public MapsTab()
         {
-            var show = new Command(() => ShowMenu());
+            Command show = new Command(() => ShowMenu());
             ShowMenu();
-            viewModel = new MapsTabViewModel(SlideMenu,show);
+            viewModel = new MapsTabViewModel(SlideMenu, show);
             ToolbarItem logOut = new ToolbarItem { Text = "Logout", Order = ToolbarItemOrder.Primary, Priority = 1 };
             ToolbarItems.Add(new ToolbarItem("Logout", null, new Action(() => LogOut()), ToolbarItemOrder.Secondary, CheckPlatform()));
             Content = viewModel.Main;
@@ -31,9 +26,10 @@ namespace RhodeIT.Views
         }
         private void LogOut()
         {
-            Application.Current.MainPage = new LoginPage();
             RhodeITDB db = new RhodeITDB();
             db.LogOut();
+            Application.Current.MainPage = new LoginPage();
+            
         }
     }
 }

@@ -9,7 +9,6 @@ namespace RhodeIT.Databases
 {
     public class RhodeITDB
     {
-        private Realm db;
         /// <summary>
         /// Initializes a new instance of the <see cref="T:RealmDataBase"/> class.
         /// </summary>
@@ -17,14 +16,12 @@ namespace RhodeIT.Databases
         {
         }
 
-        private void SetUpDB()
+        private Realm SetUpDB()
         {
+            Realm db = null;
             try
             {
-
                 db = Realm.GetInstance();//open realm db
-                                         // RhodeITSmartContract = new RhodeITSmartContract();
-
             }
             catch (Realms.Exceptions.RealmMigrationNeededException)
             {
@@ -37,6 +34,7 @@ namespace RhodeIT.Databases
             finally
             {
             }
+            return db;
         }
 
         /// <summary>
@@ -45,7 +43,7 @@ namespace RhodeIT.Databases
         /// <returns><c>true</c>, if run was firsted, <c>false</c> otherwise.</returns>
         public bool FirstRun()
         {
-            SetUpDB();
+            Realm db = SetUpDB();
             List<DockingStaion> temp = db.All<DockingStaion>().ToList();
             return temp.Count == 0 ? true : false;
         }
@@ -55,7 +53,7 @@ namespace RhodeIT.Databases
         /// <returns>bool </returns>
         public bool FirstRunAdmin()
         {
-            SetUpDB();
+            Realm db = SetUpDB();
             List<VenueLocation> temp = db.All<VenueLocation>().ToList();
             return temp.Count == 0 ? true : false;
         }
@@ -66,7 +64,6 @@ namespace RhodeIT.Databases
         /// <param name="dets">login credentials of user</param>
         public void UpdateLoginDetails(LoginDetails dets)
         {
-            SetUpDB();
             CrossSecureStorage.Current.SetValue("Password", dets.Password);
             CrossSecureStorage.Current.SetValue("ID", dets.User_ID);
             CrossSecureStorage.Current.SetValue("Credit", dets.RideCredits == null ? "" : dets.RideCredits.ToString());
@@ -79,7 +76,7 @@ namespace RhodeIT.Databases
         /// <returns>LoginDetails</returns>
         public LoginDetails GetUserDetails()
         {
-            SetUpDB();
+            Realm db = SetUpDB();
             LoginDetails temp = new LoginDetails();
             try
             {
@@ -100,7 +97,6 @@ namespace RhodeIT.Databases
         /// </summary>
         public void LogOut()
         {
-            SetUpDB();
             CrossSecureStorage.Current.DeleteKey("Password");
             CrossSecureStorage.Current.DeleteKey("ID");
             CrossSecureStorage.Current.DeleteKey("Ethereum_Address");
@@ -113,7 +109,7 @@ namespace RhodeIT.Databases
         /// <param name="locations"> names of the docking stations</param>
         public void StoreVenueLocations(List<VenueLocation> locations)
         {
-            SetUpDB();
+            Realm db = SetUpDB();
             if (db.All<VenueLocation>().ToList().Count > 0)
             {
                 return;
@@ -132,7 +128,7 @@ namespace RhodeIT.Databases
         /// <param name="reciept"></param>
         public void StoreTransactionReceipt(TransactionReceipt reciept)
         {
-            SetUpDB();
+            Realm db = SetUpDB();
             db.Write(() =>
             {
                 db.Add(reciept, true);
@@ -144,8 +140,13 @@ namespace RhodeIT.Databases
         /// <returns>List<TransactionReciept></returns>
         public List<TransactionReceipt> GetTransactionReceipts()
         {
-            SetUpDB();
-            return db.All<TransactionReceipt>().ToList();
+            Realm db = SetUpDB();
+            List<TransactionReceipt> data = new List<TransactionReceipt>();
+            db.Write(() =>
+            {
+                data = db.All<TransactionReceipt>().ToList();
+            });
+            return data;
         }
         /// <summary>
         /// Stores a users latest ride
@@ -153,7 +154,7 @@ namespace RhodeIT.Databases
         /// <param name="ride"></param>
         public void StoreUserRide(Ride ride)
         {
-            SetUpDB();
+            Realm db = SetUpDB();
             db.Write(() =>
             {
                 db.Add(ride, true);
@@ -165,8 +166,43 @@ namespace RhodeIT.Databases
         /// <returns>List<Ride></returns>
         public List<Ride> GetUserUpComingRides()
         {
-            SetUpDB();
-            return db.All<Ride>().ToList();
+            Realm db = SetUpDB();
+            List<Ride> data = new List<Ride>();
+
+            db.Write(() =>
+            {
+                data = db.All<Ride>().ToList();
+            });
+            return data;
+        }
+        public void RemoveRideFromList(Ride ride)
+        {
+            Realm db = SetUpDB();
+            db.Write(() =>
+            {
+                List<Ride> all = db.All<Ride>().ToList();
+                List<Ride> newRides = new List<Ride>();
+                for (int i = 0; i < all.Count; i++)
+                {
+                    if (all[i].ID == ride.ID)
+                    {
+                        continue;
+                    }
+
+                    newRides.Add(all[i]);
+                }
+                if (newRides.Count == 0)
+                {
+                    db.RemoveAll<Ride>();
+                }
+                else
+                {
+                    foreach (Ride tempride in newRides)
+                    {
+                        db.Add(tempride, true);
+                    }
+                }
+            });
         }
     }
 }

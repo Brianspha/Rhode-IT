@@ -31,7 +31,8 @@ namespace RhodeIT.ViewModels
         private void Setup()
         {
             RhodeITDB db = new RhodeITDB();
-            Receipts = db.GetTransactionReceipts();
+            // Receipts = db.GetTransactionReceipts();
+            Receipts = new List<TransactionReceipt>();
         }
 
         /// <summary>

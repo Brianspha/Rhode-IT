@@ -18,7 +18,7 @@ namespace RhodeIT.ViewModels
     public class MapsTabViewModel : INotifyPropertyChanged
     {
         private RhodesMap customMap;
-        private readonly RhodesDataBase RhodesDataBase;
+        private RhodesDataBase RhodesDataBase;
         private RhodeITService RhodeITServices;
         private bool visibleYet;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -95,7 +95,6 @@ namespace RhodeIT.ViewModels
         public MapsTabViewModel(SlideMenuView slideMenu, Command show)
         {
             //CustomMap =(RhodesMap)mp;
-            RhodesDataBase = new RhodesDataBase();
             RhodeITServices = new RhodeITService();
             SlideUp = slideMenu;
             SetUpMap();
@@ -176,6 +175,7 @@ namespace RhodeIT.ViewModels
             }
             SlideUp = new AvailableBicycles(e.Pin.Label, ShowMenu, Main);
             Main.Children.Add(SlideUp);
+            
         }
 
         private void PopulateMap()

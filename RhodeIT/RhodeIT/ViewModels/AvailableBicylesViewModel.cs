@@ -5,7 +5,6 @@ using RhodeIT.Services.RhodeIT;
 using Syncfusion.ListView.XForms;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -36,16 +35,16 @@ namespace RhodeIT.ViewModels
         public ICommand Close { get; set; }
         public string name { get; set; }
 
-        private ObservableCollection<Bicycle> availBicycles;
+        private ObservableCollection<Bicycle> availableBicycles;
         private Command ShowMenu;
-        public ObservableCollection<Bicycle> AvailBicycles
+        public ObservableCollection<Bicycle> AvailableBicycles
         {
             set
             {
-                if (value != availBicycles)
+                if (value != availableBicycles)
                 {
-                    availBicycles = value;
-                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(AvailBicycles)));
+                    availableBicycles = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(AvailableBicycles)));
 
                 }
             }
@@ -109,7 +108,7 @@ namespace RhodeIT.ViewModels
                 LayoutManager = new LinearLayout(),
                 ItemTemplate = AvailablesBicyclesDataTemplate()
             };
-            listView.ItemTapped += ListView_ItemTapped;
+            listView.ItemTapped += ListView_ItemTappedAsync;
             ListViewParent.Children.Add(listView);
         }
         /// <summary>
@@ -153,7 +152,12 @@ namespace RhodeIT.ViewModels
             });
         }
 
-        private void ListView_ItemTapped(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
+        private async void ListView_ItemTappedAsync(object sender, Syncfusion.ListView.XForms.ItemTappedEventArgs e)
+        {
+            await ProcessRentalAsync(e);
+        }
+
+        private async Task<bool> ProcessRentalAsync(Syncfusion.ListView.XForms.ItemTappedEventArgs e)
         {
             Bicycle bicycle = e.ItemData as Bicycle;
             RhodeITDB tempDB = new RhodeITDB();
@@ -161,21 +165,21 @@ namespace RhodeIT.ViewModels
             bicycle.renter = details.Ethereum_Address;
             IUserDialogs dialog = UserDialogs.Instance;
             dialog.ShowLoading("Renting Out bicycle...");
-            ConfiguredTaskAwaitable<bool> success = SmartContract.RentBicycleRequestAndWaitForReceiptAsync(bicycle).ConfigureAwait(false);
-            if (success.GetAwaiter().GetResult())
+            bool success = await SmartContract.RentBicycleRequestAndWaitForReceiptAsync(bicycle).ConfigureAwait(false);
+            dialog.HideLoading();
+            if (success)
             {
-                dialog.HideLoading();
-                UpdateBicycleListAsync().Wait();
                 dialog.Toast("Success!!");
                 dialog.Alert("Successfully rented out bicycle", "Success", "OK");
             }
             else
             {
-                dialog.HideLoading();
                 dialog.Toast("Error!!");
                 dialog.Alert("Something went wrong whilst processing bicycle please ensure you have enough ride credits", "Error", "OK");
             }
+            return await Task.FromResult(true).ConfigureAwait(false);
         }
+
         private async Task UpdateBicycleListAsync()
         {
             ObservableCollection<Bicycle> tempBikes = await SmartContract.GetAvailableBicyclesFromDockingStationAsync(Name).ConfigureAwait(false);

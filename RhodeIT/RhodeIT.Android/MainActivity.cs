@@ -25,7 +25,6 @@ namespace RhodeIT.Droid
             Xamarin.FormsGoogleMaps.Init(this, savedInstanceState); // initialize for Xamarin.Forms.GoogleMaps
             Rg.Plugins.Popup.Popup.Init(this, savedInstanceState);
             UserDialogs.Init(this);
-            RhodeITDB db = new RhodeITDB();
             LoadApplication(new App());
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)

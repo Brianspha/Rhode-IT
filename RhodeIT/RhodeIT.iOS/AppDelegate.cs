@@ -37,7 +37,6 @@ namespace RhodeIT.iOS
             new SfBusyIndicatorRenderer();
             Syncfusion.SfDataGrid.XForms.iOS.SfDataGridRenderer.Init();
             ResourceHelper temp = new ResourceHelper();
-            RhodeITDB db = new RhodeITDB();
             SfPopupLayoutRenderer.Init();
             SfListViewRenderer.Init();
             Rg.Plugins.Popup.Popup.Init();

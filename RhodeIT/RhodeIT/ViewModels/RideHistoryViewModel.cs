@@ -86,7 +86,7 @@ namespace RhodeIT.ViewModels
             Label historyRidesLabel = new Label { Text = "Past Rides", BackgroundColor = Color.White, FontSize = 18, TextColor=Color.Black,FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
             historyRidesCardLabel.Content = new StackLayout { Children = { historyRidesLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
             rides.Children.Add(historyRidesCardLabel);
-            rides.Children.Add(pastRides);
+           rides.Children.Add(pastRides);
             MyPastRides.Content = rides;
         }
 

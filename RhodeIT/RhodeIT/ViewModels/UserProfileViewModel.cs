@@ -1,4 +1,5 @@
-﻿using ImageCircle.Forms.Plugin.Abstractions;
+﻿using Acr.UserDialogs;
+using ImageCircle.Forms.Plugin.Abstractions;
 using RhodeIT.Databases;
 using RhodeIT.Models;
 using RhodeIT.Services.RhodeIT;
@@ -26,7 +27,7 @@ namespace RhodeIT.ViewModels
                 if (value != myRides)
                 {
                     myRides = value;
-                    OnPropertyChanged(nameof(MyRides));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(MyRides)));
                 }
             }
         }
@@ -43,7 +44,7 @@ namespace RhodeIT.ViewModels
                 if (value != main)
                 {
                     main = value;
-                    OnPropertyChanged(nameof(Main));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Main)));
                 }
             }
         }
@@ -80,7 +81,6 @@ namespace RhodeIT.ViewModels
             CreateUserInformationUIElements(out MaterialCard userInfoParent, studentNumberCard, topUpParent);
             RidesViewModel = new RidesViewModel();
             MyRides = InitialiseUpComingRidesList();
-            MyRides.ItemTapped += MyRides_ItemTapped;
             MaterialCard upcomingRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 5, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
             Label upComingLabel = new Label { Text = "Upcoming Rides", BackgroundColor = Color.White, TextColor = Color.Black, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
             upcomingRidesCardLabel.Content = new StackLayout { Children = { upComingLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
@@ -110,7 +110,7 @@ namespace RhodeIT.ViewModels
         /// <returns></returns>
         private SfListView InitialiseUpComingRidesList()
         {
-            return new SfListView
+            SfListView temp = new SfListView
             {
                 ItemSize = 350,
                 Orientation = Orientation.Horizontal,
@@ -118,7 +118,30 @@ namespace RhodeIT.ViewModels
                 LayoutManager = new LinearLayout(),
                 ItemTemplate = InitialiseUpcomingUserRidesDataTemplate()
             };
+            temp.ItemHolding += MyRides_ItemTapped;
+            temp.ItemTapped += MyRides_ItemTapped;
+            return temp;
         }
+
+        private void MyRides_ItemTapped(object sender, ItemHoldingEventArgs e)
+        {
+            RemoveRideFromList(e).Wait();
+        }
+
+        private async Task<bool> RemoveRideFromList(ItemHoldingEventArgs e)
+        {
+            var dialog = UserDialogs.Instance;
+            dialog.ShowLoading("Docking Bicycle...");
+            Ride rental = e.ItemData as Ride;
+            RhodeITDB db = new RhodeITDB();
+            LoginDetails details = db.GetUserDetails();
+            await DockBicycleAsync(new Bicycle { ID = rental.ID, renter = details.Ethereum_Address, DockdeAt = rental.StationName }).ConfigureAwait(false);
+            db.RemoveRideFromList(rental);
+            MyRides = InitialiseUpComingRidesList();
+            dialog.HideLoading();
+            return true;
+        }
+
         /// <summary>
         /// Initialises the DataTemplate to be used to populate the Listview
         /// which renders all upcoming user rides
@@ -349,16 +372,13 @@ namespace RhodeIT.ViewModels
         }
 
         /// <summary>
-        /// Invoked when a property is assingned a new value
+        /// Invloked when any property is assigned a new value.
         /// </summary>
         /// <param name="propertyName">Property name.</param>
-        private void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            //PropertyChangedEventHandler eventHandler = this.PropertyChanged;
+            PropertyChanged?.Invoke(this, e);
         }
 
 
