@@ -29,5 +29,6 @@ namespace RhodeIT.Views
         {
             return Device.RuntimePlatform == Device.iOS ? 0 : 1;
         }
+
     }
 }

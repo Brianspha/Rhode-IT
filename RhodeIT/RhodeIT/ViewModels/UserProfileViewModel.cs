@@ -162,7 +162,7 @@ namespace RhodeIT.ViewModels
                 docked.SetBinding(Label.TextProperty, new Binding("Docked"));
                 SfButton details = new SfButton
                 {
-                    Text = "Cancel",
+                    Text = "Dock",
                     BackgroundColor = Color.White,
                     TextColor = Color.Black,
                     CornerRadius = 20,

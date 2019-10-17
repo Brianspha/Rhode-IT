@@ -1,9 +1,9 @@
 ﻿using RhodeIT.Models;
 using Syncfusion.ListView.XForms;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Xamarin.Forms;
-using XamEffects;
 using XF.Material.Forms.UI;
 
 namespace RhodeIT.ViewModels
@@ -24,21 +24,22 @@ namespace RhodeIT.ViewModels
             }
         }
 
-        private ObservableCollection<Ride> rideHistory;
-        public ObservableCollection<Ride> RideHistory
+        private ObservableCollection<TransactionReceipt> transactionReceipts;
+        public ObservableCollection<TransactionReceipt> TransactionReceipts
         {
-            get => rideHistory;
+            get => transactionReceipts;
             private set
             {
-                if (value != rideHistory)
+                if (value != transactionReceipts)
                 {
-                    rideHistory = value;
-                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(RideHistory)));
+                    transactionReceipts = value;
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(TransactionReceipts)));
                 }
             }
         }
         private event PropertyChangedEventHandler PropertyChanged;
 
+        private TransactionHistoryViewModel TransactionHistoryViewModel;
 
         /// <summary>
         /// Constructor
@@ -66,6 +67,7 @@ namespace RhodeIT.ViewModels
         /// </summary>
         private void SetUp()
         {
+            TransactionReceipts = new ObservableCollection<TransactionReceipt>();
             StackLayout rides = new StackLayout { VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
             MyPastRides = new MaterialCard
             {
@@ -75,18 +77,24 @@ namespace RhodeIT.ViewModels
                 VerticalOptions = LayoutOptions.CenterAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand
             };
+            TransactionHistoryViewModel = new TransactionHistoryViewModel();
+            List<TransactionReceipt> tempReceipts = TransactionHistoryViewModel.Receipts;
+            foreach (TransactionReceipt receipt in tempReceipts)
+            {
+                TransactionReceipts.Add(receipt);
+            }
             SfListView pastRides = new SfListView
             {
                 ItemSize = 350,
-                ItemsSource = new TransactionHistoryViewModel().Receipts,
+                ItemsSource = TransactionReceipts,
                 LayoutManager = new LinearLayout(),
                 ItemTemplate = InitialiseListTemplates()
             };
             MaterialCard historyRidesCardLabel = new MaterialCard { BackgroundColor = Color.White, Elevation = 4, IsClickable = true, HeightRequest = 100, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
-            Label historyRidesLabel = new Label { Text = "Past Rides", BackgroundColor = Color.White, FontSize = 18, TextColor=Color.Black,FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
+            Label historyRidesLabel = new Label { Text = "Transaction History", BackgroundColor = Color.White, FontSize = 18, TextColor = Color.Black, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.FillAndExpand, HorizontalOptions = LayoutOptions.FillAndExpand };
             historyRidesCardLabel.Content = new StackLayout { Children = { historyRidesLabel }, VerticalOptions = LayoutOptions.CenterAndExpand, HorizontalOptions = LayoutOptions.CenterAndExpand };
             rides.Children.Add(historyRidesCardLabel);
-           rides.Children.Add(pastRides);
+            rides.Children.Add(pastRides);
             MyPastRides.Content = rides;
         }
 
@@ -103,9 +111,9 @@ namespace RhodeIT.ViewModels
                 Label receiptLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, Text = "Receipt", TextColor = Color.Black };
                 receiptLabel.SetBinding(Label.TextProperty, new Binding("Receipt"));
                 Label activity = new Label { BackgroundColor = Color.Transparent, FontSize = 15, Text = "Activity", TextColor = Color.Black };
-                Label activityLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15,TextColor=Color.Black };
+                Label activityLabel = new Label { FontAttributes = FontAttributes.Bold, BackgroundColor = Color.Transparent, FontSize = 15, TextColor = Color.Black };
                 activity.SetBinding(Label.TextProperty, new Binding("Activity"));
-                  StackLayout activityParent = new StackLayout
+                StackLayout activityParent = new StackLayout
                 {
                     VerticalOptions = LayoutOptions.FillAndExpand,
                     HorizontalOptions = LayoutOptions.FillAndExpand,
