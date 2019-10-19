@@ -3,7 +3,6 @@ credits INT NOT NULL,
 password VARCHAR(32) NOT NULL,
 student_staff_id VARCHAR(8) PRIMARY KEY NOT NULL,
 eth_address character(42) NOT NULL,
-loginhash character(66) ,
 lastlogin timestamp without time zone DEFAULT now()
 );
 
