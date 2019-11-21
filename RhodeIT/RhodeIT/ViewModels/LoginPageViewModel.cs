@@ -113,7 +113,7 @@ namespace RhodeIT.ViewModels
                 WidthRequest = 100,
                 Aspect = Aspect.AspectFill,
                 HorizontalOptions = LayoutOptions.Center,
-                Source = ImageSource.FromUri(new Uri("https://lh3.googleusercontent.com/m_1Pc3Sfge_muByZBS1KVgwvDYSQldlfmKkOV4QBqRwoyaf2zPQxRiXLjckmCctk-o1X=s85")),
+                Source = ImageSource.FromUri(new Uri("https://doc-00-0c-docs.googleusercontent.com/docs/securesc/eeatuec7jo9pa962mjje0g645iqttdif/7btbm9o77nf47ofngfenbutqnflr4fdd/1571702400000/11765531708014033684/11765531708014033684/1YfCj4Vbk2R57AEwJ13FCfE46yDtsXoig?e=download&nonce=d14s6bcbhej6a&user=11765531708014033684&hash=3ao9r0gfvvst6lvbq4qjq4fa2l8pctcp")),
                 Opacity = 100
             };
             PagelabelStackLayOut.Children.Add(LoginPageIcon);
